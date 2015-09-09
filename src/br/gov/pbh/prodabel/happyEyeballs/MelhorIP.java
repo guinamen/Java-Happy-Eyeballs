@@ -58,6 +58,11 @@ public class MelhorIP implements Callable<Object[]> {
 		this.porta = porta;
 	}
 
+	/**
+	 * Fecha todas as conexões.
+	 * 
+	 * @throws IOException
+	 */
 	private void fechaConexoes() throws IOException {
 		for (SocketChannel canal : canais) {
 			canal.finishConnect();
@@ -77,7 +82,7 @@ public class MelhorIP implements Callable<Object[]> {
 	private Object[] melhorIPV() throws IOException {
 		Object[] ret = new Object[2];
 		InetAddress melhor = null;
-		long tempo = 0;
+		long tempoFim = 0;
 		// Cria o selector para realizar as conexões de forma assíncrona.
 		selector = Selector.open();
 		canais = new ArrayList<SocketChannel>(enderecosIPV.size());
@@ -85,24 +90,33 @@ public class MelhorIP implements Callable<Object[]> {
 			// Cria os canais e os registram no selector
 			SocketChannel canal = SocketChannel.open();
 			canal.configureBlocking(false);
-			canal.register(selector, SelectionKey.OP_CONNECT, endereco);
+			Long inicio = System.currentTimeMillis();
 			canal.connect(new InetSocketAddress(endereco, porta));
+			canal.register(selector, SelectionKey.OP_CONNECT, new Object[] { endereco, inicio });
 			canais.add(canal);
 		}
-		long inicio = System.currentTimeMillis();
 		// Espera uma ou mais conexões ocorrerem ou o tempo expirar.
 		if (selector.select(TEMPO_TIMEOUT) > 0) {
-			tempo = System.currentTimeMillis() - inicio;
+			long fim = System.currentTimeMillis();
+			long melhorTempo = Long.MAX_VALUE;
 			Set<SelectionKey> chaves = selector.selectedKeys();
-			melhor = (InetAddress) chaves.iterator().next().attachment();
-			System.out.println("Ip: " + melhor.getHostAddress() + " em " + tempo + " milisegundos");
+			for (SelectionKey chave : chaves) {
+				Object[] dados = (Object[]) chave.attachment();
+				long tempo = fim - (Long) (dados[1]);
+				if (tempo < melhorTempo) {
+					melhorTempo = tempo;
+					melhor = (InetAddress) (dados[0]);
+				}
+			}
+			tempoFim = melhorTempo;
+			System.out.println("Ip: " + melhor.getHostAddress() + " em " + tempoFim + " milisegundos");
 		} else {
 			fechaConexoes();
 			throw new IOException("Tempo de conexão expirado");
 		}
 		fechaConexoes();
 		ret[0] = melhor;
-		ret[1] = tempo;
+		ret[1] = tempoFim;
 		return ret;
 	}
 
