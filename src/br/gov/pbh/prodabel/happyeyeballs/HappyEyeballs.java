@@ -114,8 +114,8 @@ public final class HappyEyeballs {
   }
 
   /**
-   * Finaliza o pool de threads e limpa o cache para evitar memory leak.
-   * Executar ao finalizar o programa.
+   * Finaliza o pool de threads e limpa o cache para evitar memory leak. Executar ao finalizar o
+   * programa.
    */
   public void terminarPoolThread() {
     executor.shutdown();
@@ -150,8 +150,8 @@ public final class HappyEyeballs {
     }
     // Busca todos os ips
     final InetAddress[] enderecos = InetAddress.getAllByName(nomeRede);
-    final List<Inet4Address> enderecosIpV4 = new ArrayList<Inet4Address>();
-    final List<Inet6Address> enderecosIpV6 = new ArrayList<Inet6Address>();
+    final List<Inet4Address> enderecosIpV4 = new ArrayList<Inet4Address>(enderecos.length);
+    final List<Inet6Address> enderecosIpV6 = new ArrayList<Inet6Address>(enderecos.length);
     // Separa os IPs
     for (final InetAddress endereco : enderecos) {
       if (endereco instanceof Inet4Address) {
@@ -182,15 +182,15 @@ public final class HappyEyeballs {
    * @throws IOException
    *           Exceção caso ocorra algum problema.
    */
-  private InetAddress obterMelhorIp(List<Inet4Address> enderecosIpV4,
-      List<Inet6Address> enderecosIpV6, int porta) throws IOException {
+  private InetAddress obterMelhorIp(final List<Inet4Address> enderecosIpV4,
+      final List<Inet6Address> enderecosIpV6, final int porta) throws IOException {
     InetAddress melhor = null;
     Amostra melhorIpV6 = null;
     Amostra melhorIpV4 = null;
-    MelhorIp ipv6Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV6, porta);
-    MelhorIp ipv4Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV4, porta);
-    Future<Amostra> ipv6Futuro = executor.submit(ipv6Tarefa);
-    Future<Amostra> ipv4Futuro = executor.submit(ipv4Tarefa);
+    final MelhorIp ipv6Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV6, porta);
+    final MelhorIp ipv4Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV4, porta);
+    final Future<Amostra> ipv6Futuro = executor.submit(ipv6Tarefa);
+    final Future<Amostra> ipv4Futuro = executor.submit(ipv4Tarefa);
     // Dispara as tarefas de verificar o melhor IP em paralelo
     try {
       melhorIpV6 = ipv6Futuro.get();
@@ -209,16 +209,18 @@ public final class HappyEyeballs {
           .println("Não foi possível conectar-se IPV4: " + excep.getCause().getLocalizedMessage());
     }
     // Verifica se existem endereços IPV6
-    if (melhorIpV6 != null) {
-      // Verifica tempo de conexão
-      if ((Long) melhorIpV4.getTempoConeccao() < (Long) melhorIpV6.getTempoConeccao()) {
+    if (melhorIpV6 == null) {
+      if (melhorIpV4 != null) {
         melhor = melhorIpV4.getEnderecoIp();
-      } else {
-        melhor = melhorIpV6.getEnderecoIp();
       }
     } else {
-      // Caso não existam IPV6 o melhor IPV4 é escolhido.
-      melhor = melhorIpV4.getEnderecoIp();
+      if (melhorIpV4 == null) {
+        melhor = melhorIpV6.getEnderecoIp();
+      } else {
+        melhor = melhorIpV4.compareTo(melhorIpV6) >= 0
+            ? melhorIpV6.getEnderecoIp()
+            : melhorIpV4.getEnderecoIp();
+      }
     }
     return melhor;
   }
@@ -229,7 +231,7 @@ public final class HappyEyeballs {
    * @param args
    *          parâmetros de inicialização do teste
    */
-  public static void main(String[] args) {
+  public static void main(final String... args) {
     try {
       HappyEyeballs.getSingleHappyEyeballs().obterIp("www.google.com.br", 80);
       HappyEyeballs.getSingleHappyEyeballs().obterIp("www.facebook.com.br", 80);

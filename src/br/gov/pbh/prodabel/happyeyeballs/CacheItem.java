@@ -17,11 +17,11 @@ public class CacheItem implements Serializable {
   /**
    * Endereço.
    */
-  private InetAddress endereco;
+  private final InetAddress endereco;
   /**
    * Tempo em que o endereço foi adicionado no cache.
    */
-  private long tempoAcesso;
+  private final long tempoAcesso;
 
   /**
    * Construtor simples.

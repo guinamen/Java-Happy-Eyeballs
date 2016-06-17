@@ -9,6 +9,8 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
 /**
@@ -93,7 +95,7 @@ public class MelhorIp implements Callable<Amostra> {
       final SocketChannel canal = SocketChannel.open();
       canal.configureBlocking(false);
       canal.register(selector, SelectionKey.OP_CONNECT,
-          new Object[] { endereco, System.currentTimeMillis() });
+          new Amostra(endereco, System.currentTimeMillis()));
       canal.connect(new InetSocketAddress(endereco, porta));
       canais.add(canal);
     }
@@ -107,26 +109,19 @@ public class MelhorIp implements Callable<Amostra> {
    * @throws HappyEyeBallsException
    */
   private Amostra checaCanais() throws IOException, HappyEyeBallsException {
-    InetAddress melhor = null;
-    long tempoFim = 0;
+    final SortedSet<Amostra> amostras = new TreeSet<Amostra>();
     if (selector.select(tempoTimeOut) > 0) {
       final long fim = System.currentTimeMillis();
-      long melhorTempo = Long.MAX_VALUE;
       final Set<SelectionKey> chaves = selector.selectedKeys();
       for (final SelectionKey chave : chaves) {
-        final Object[] dados = (Object[]) chave.attachment();
-        final long tempo = fim - (Long) (dados[1]);
-        if (tempo < melhorTempo) {
-          melhorTempo = tempo;
-          melhor = (InetAddress) (dados[0]);
-        }
+        final Amostra dados = (Amostra) chave.attachment();
+        dados.setTempoFim(fim);
+        amostras.add(dados);
       }
-      tempoFim = melhorTempo;
-      System.out.println("Ip: " + melhor.getHostAddress() + " em " + tempoFim + " milisegundos");
     } else {
       throw new HappyEyeBallsException("Tempo de conexão expirado");
     }
-    return new Amostra(melhor, tempoFim);
+    return amostras.first();
   }
 
   /**
