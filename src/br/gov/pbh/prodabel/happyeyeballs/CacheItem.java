@@ -1,4 +1,4 @@
-package br.gov.pbh.prodabel.happyEyeballs;
+package br.gov.pbh.prodabel.happyeyeballs;
 
 import java.net.InetAddress;
 
@@ -26,25 +26,41 @@ public class CacheItem {
    * @param tempoAcesso
    *          Tempo em que o item foi adicionado.
    */
-  public CacheItem(InetAddress endereco, long tempoAcesso) {
+  public CacheItem(final InetAddress endereco, final long tempoAcesso) {
     super();
     this.endereco = endereco;
     this.tempoAcesso = tempoAcesso;
   }
 
+  /**
+   * Retorna o endereço.
+   * @return endereço ip
+   */
   public InetAddress getEndereco() {
     return endereco;
   }
 
-  public void setEndereco(InetAddress endereco) {
+  /**
+   * Alterao endereço.
+   * @param endereco novo endereço
+   */
+  public void setEndereco(final InetAddress endereco) {
     this.endereco = endereco;
   }
 
+  /**
+   * Retorna o tempo de acesso.
+   * @return tempo de acesso
+   */
   public Long getTempoAcesso() {
     return tempoAcesso;
   }
 
-  public void setTempoAcesso(Long tempoAcesso) {
+  /**
+   * Altera o tempo de acesso.
+   * @param tempoAcesso novo tempo de acesso
+   */
+  public void setTempoAcesso(final Long tempoAcesso) {
     this.tempoAcesso = tempoAcesso;
   }
 

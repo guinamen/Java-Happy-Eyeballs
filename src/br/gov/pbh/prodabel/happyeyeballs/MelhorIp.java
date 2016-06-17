@@ -1,4 +1,4 @@
-package br.gov.pbh.prodabel.happyEyeballs;
+package br.gov.pbh.prodabel.happyeyeballs;
 
 import java.io.IOException;
 import java.net.InetAddress;

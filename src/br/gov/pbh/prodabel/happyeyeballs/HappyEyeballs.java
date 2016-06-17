@@ -1,4 +1,4 @@
-package br.gov.pbh.prodabel.happyEyeballs;
+package br.gov.pbh.prodabel.happyeyeballs;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -19,7 +19,7 @@ import java.util.concurrent.Future;
  * @author guilherme
  * @version 0.1
  */
-public class HappyEyeballs {
+public final class HappyEyeballs {
 
   /**
    * Cache para armazenar as resoluções dos nomes.
@@ -32,7 +32,7 @@ public class HappyEyeballs {
   /**
    * Instância única do objeto (Singleton).
    */
-  private static HappyEyeballs SingleHappyEyeballs = null;
+  private static HappyEyeballs singleHappyEyeballs = null;
 
   /**
    * Pool de threads para paralelizar a resolução de nomes.
@@ -57,7 +57,7 @@ public class HappyEyeballs {
    * @param numThread
    *          Número de threads do pool de threads.
    */
-  private HappyEyeballs(long tempoExpiracao, long tempoTimeOut, int numThread) {
+  private HappyEyeballs(final long tempoExpiracao, final long tempoTimeOut, final int numThread) {
     super();
     this.tempoExpiracao = tempoExpiracao;
     this.tempoTimeOut = tempoTimeOut;
@@ -72,15 +72,15 @@ public class HappyEyeballs {
   public static HappyEyeballs getSingleHappyEyeballs() {
     // TODO Forma melhor de fornecer os parâmetros de configuração do
     // algoritmo.
-    if (SingleHappyEyeballs == null) {
-      SingleHappyEyeballs = new HappyEyeballs(5000L, 300L, 4);
+    if (singleHappyEyeballs == null) {
+      singleHappyEyeballs = new HappyEyeballs(5000L, 300L, 4);
     }
-    return SingleHappyEyeballs;
+    return singleHappyEyeballs;
   }
 
   /**
-   * Finaliza o pool de threads e limpa o cache para evitar memory leak, executar ao finalizar o
-   * programa.
+   * Finaliza o pool de threads e limpa o cache para evitar memory leak.
+   * Executar ao finalizar o programa.
    */
   public void terminarPoolThread() {
     executor.shutdown();
@@ -98,7 +98,7 @@ public class HappyEyeballs {
    * @throws IOException
    *           Caso ocorra alguma exceção.
    */
-  public InetAddress obterIp(String nomeRede, int porta) throws IOException {
+  public InetAddress obterIp(final String nomeRede, final int porta) throws IOException {
     // Varre o cache
     if (CACHE.containsKey(nomeRede)) {
       final CacheItem item = CACHE.get(nomeRede);
