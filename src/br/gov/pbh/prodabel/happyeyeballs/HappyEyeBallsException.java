@@ -4,6 +4,7 @@
 package br.gov.pbh.prodabel.happyeyeballs;
 
 /**
+ * Exceção para as atividades do algoritmo Happy Eye Balls.
  * @author guilherme
  *
  */
