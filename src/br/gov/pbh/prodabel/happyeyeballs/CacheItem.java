@@ -1,5 +1,6 @@
 package br.gov.pbh.prodabel.happyeyeballs;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 
 /**
@@ -8,7 +9,11 @@ import java.net.InetAddress;
  * @author guilherme
  *
  */
-public class CacheItem {
+public class CacheItem implements Serializable {
+  /**
+   * Número serial.
+   */
+  private static final long serialVersionUID = 2466334712384701929L;
   /**
    * Endereço.
    */
@@ -34,6 +39,7 @@ public class CacheItem {
 
   /**
    * Retorna o endereço.
+   * 
    * @return endereço ip
    */
   public InetAddress getEndereco() {
@@ -41,27 +47,12 @@ public class CacheItem {
   }
 
   /**
-   * Alterao endereço.
-   * @param endereco novo endereço
-   */
-  public void setEndereco(final InetAddress endereco) {
-    this.endereco = endereco;
-  }
-
-  /**
    * Retorna o tempo de acesso.
+   * 
    * @return tempo de acesso
    */
   public Long getTempoAcesso() {
     return tempoAcesso;
-  }
-
-  /**
-   * Altera o tempo de acesso.
-   * @param tempoAcesso novo tempo de acesso
-   */
-  public void setTempoAcesso(final Long tempoAcesso) {
-    this.tempoAcesso = tempoAcesso;
   }
 
 }

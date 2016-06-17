@@ -32,20 +32,25 @@ public final class HappyEyeballs {
   /**
    * Instância única do objeto (Singleton).
    */
-  private static HappyEyeballs singleHappyEyeballs = null;
+  private static HappyEyeballs single;
 
   /**
    * Pool de threads para paralelizar a resolução de nomes.
    */
-  private final ExecutorService executor;
+  private transient final ExecutorService executor;
   /**
    * Tempo de expiração da resolução do nome.
    */
-  private final long tempoExpiracao;
+  private final long dnsExpiracao;
   /**
    * Tempo de time out da conexão.
    */
-  private final long tempoTimeOut;
+  private final long coneccaoExpiracao;
+
+  /**
+   * Número de threads.
+   */
+  private final int numThread;
 
   /**
    * Construtor privado para garantir única instancia da classe.
@@ -59,9 +64,37 @@ public final class HappyEyeballs {
    */
   private HappyEyeballs(final long tempoExpiracao, final long tempoTimeOut, final int numThread) {
     super();
-    this.tempoExpiracao = tempoExpiracao;
-    this.tempoTimeOut = tempoTimeOut;
-    this.executor = Executors.newFixedThreadPool(numThread);
+    this.dnsExpiracao = tempoExpiracao;
+    this.coneccaoExpiracao = tempoTimeOut;
+    this.numThread = numThread;
+    this.executor = Executors.newFixedThreadPool(this.numThread);
+  }
+
+  /**
+   * Retorna o tempo de expiração da resolução do nome.
+   * 
+   * @return tempo em milisegundos
+   */
+  public long getDnsExpiracao() {
+    return dnsExpiracao;
+  }
+
+  /**
+   * Retorna o tempo expiração da conecção.
+   * 
+   * @return tempo em milisegundos
+   */
+  public long getConeccaoExpiracao() {
+    return coneccaoExpiracao;
+  }
+
+  /**
+   * Número de threads.
+   * 
+   * @return número de threads
+   */
+  public int getNumThread() {
+    return numThread;
   }
 
   /**
@@ -72,10 +105,12 @@ public final class HappyEyeballs {
   public static HappyEyeballs getSingleHappyEyeballs() {
     // TODO Forma melhor de fornecer os parâmetros de configuração do
     // algoritmo.
-    if (singleHappyEyeballs == null) {
-      singleHappyEyeballs = new HappyEyeballs(5000L, 300L, 4);
+    synchronized (MUTEX) {
+      if (single == null) {
+        single = new HappyEyeballs(5000L, 300L, 4);
+      }
     }
-    return singleHappyEyeballs;
+    return single;
   }
 
   /**
@@ -102,12 +137,12 @@ public final class HappyEyeballs {
     // Varre o cache
     if (CACHE.containsKey(nomeRede)) {
       final CacheItem item = CACHE.get(nomeRede);
-      long tempoDecorrido = 0L;
+      long tempoDecorrido;
       // Verifica se o tempo expirou
       synchronized (MUTEX) {
         tempoDecorrido = System.currentTimeMillis() - item.getTempoAcesso();
       }
-      if (tempoDecorrido < tempoExpiracao) {
+      if (tempoDecorrido < dnsExpiracao) {
         return item.getEndereco();
       } else {
         CACHE.remove(nomeRede);
@@ -118,7 +153,7 @@ public final class HappyEyeballs {
     final List<Inet4Address> enderecosIpV4 = new ArrayList<Inet4Address>();
     final List<Inet6Address> enderecosIpV6 = new ArrayList<Inet6Address>();
     // Separa os IPs
-    for (InetAddress endereco : enderecos) {
+    for (final InetAddress endereco : enderecos) {
       if (endereco instanceof Inet4Address) {
         enderecosIpV4.add((Inet4Address) endereco);
       } else {
@@ -129,7 +164,7 @@ public final class HappyEyeballs {
     final InetAddress melhorIp = obterMelhorIp(enderecosIpV4, enderecosIpV6, porta);
     enderecosIpV4.clear();
     enderecosIpV6.clear();
-    CacheItem item = new CacheItem(melhorIp, System.currentTimeMillis());
+    final CacheItem item = new CacheItem(melhorIp, System.currentTimeMillis());
     CACHE.put(nomeRede, item);
     return melhorIp;
   }
@@ -150,12 +185,12 @@ public final class HappyEyeballs {
   private InetAddress obterMelhorIp(List<Inet4Address> enderecosIpV4,
       List<Inet6Address> enderecosIpV6, int porta) throws IOException {
     InetAddress melhor = null;
-    Object[] melhorIpV6 = null;
-    Object[] melhorIpV4 = null;
-    MelhorIp ipv6Tarefa = new MelhorIp(tempoTimeOut, enderecosIpV6, porta);
-    MelhorIp ipv4Tarefa = new MelhorIp(tempoTimeOut, enderecosIpV4, porta);
-    Future<Object[]> ipv6Futuro = executor.submit(ipv6Tarefa);
-    Future<Object[]> ipv4Futuro = executor.submit(ipv4Tarefa);
+    Amostra melhorIpV6 = null;
+    Amostra melhorIpV4 = null;
+    MelhorIp ipv6Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV6, porta);
+    MelhorIp ipv4Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV4, porta);
+    Future<Amostra> ipv6Futuro = executor.submit(ipv6Tarefa);
+    Future<Amostra> ipv4Futuro = executor.submit(ipv4Tarefa);
     // Dispara as tarefas de verificar o melhor IP em paralelo
     try {
       melhorIpV6 = ipv6Futuro.get();
@@ -174,23 +209,25 @@ public final class HappyEyeballs {
           .println("Não foi possível conectar-se IPV4: " + excep.getCause().getLocalizedMessage());
     }
     // Verifica se existem endereços IPV6
-    if (melhorIpV6 != null && melhorIpV6[0] != null) {
+    if (melhorIpV6 != null) {
       // Verifica tempo de conexão
-      if ((Long) melhorIpV4[1] < (Long) melhorIpV6[1]) {
-        melhor = (InetAddress) melhorIpV4[0];
+      if ((Long) melhorIpV4.getTempoConeccao() < (Long) melhorIpV6.getTempoConeccao()) {
+        melhor = melhorIpV4.getEnderecoIp();
       } else {
-        melhor = (InetAddress) melhorIpV6[0];
+        melhor = melhorIpV6.getEnderecoIp();
       }
     } else {
       // Caso não existam IPV6 o melhor IPV4 é escolhido.
-      melhor = (InetAddress) melhorIpV4[0];
+      melhor = melhorIpV4.getEnderecoIp();
     }
     return melhor;
   }
 
   /**
    * Simples teste.
-   * @param args parâmetros de inicialização do teste
+   * 
+   * @param args
+   *          parâmetros de inicialização do teste
    */
   public static void main(String[] args) {
     try {

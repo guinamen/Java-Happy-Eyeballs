@@ -17,29 +17,29 @@ import java.util.concurrent.Callable;
  * @author guilherme
  *
  */
-public class MelhorIp implements Callable<Object[]> {
+public class MelhorIp implements Callable<Amostra> {
 
   /**
    * Tempo de expiração da atividade.
    */
-  private long tempoTimeOut;
+  private transient final long tempoTimeOut;
   /**
    * Lista de IPs.
    */
-  private List<? extends InetAddress> enderecosIp;
+  private transient final List<? extends InetAddress> enderecosIp;
   /**
    * Porta para teste de conectividade.
    */
-  private int porta;
+  private transient final int porta;
 
   /**
    * Lista de conexões assíncronas.
    */
-  private List<SocketChannel> canais;
+  private transient List<SocketChannel> canais;
   /**
    * Gerenciador de conexões assíncronas.
    */
-  Selector selector;
+  private transient Selector selector;
 
   /**
    * Construtor simples.
@@ -51,7 +51,8 @@ public class MelhorIp implements Callable<Object[]> {
    * @param porta
    *          Porta para teste de conectividade.
    */
-  public MelhorIp(long tempoTimeOut, List<? extends InetAddress> enderecosIpV, int porta) {
+  public MelhorIp(final long tempoTimeOut, final List<? extends InetAddress> enderecosIpV,
+      final int porta) {
     super();
     this.tempoTimeOut = tempoTimeOut;
     this.enderecosIp = enderecosIpV;
@@ -61,15 +62,71 @@ public class MelhorIp implements Callable<Object[]> {
   /**
    * Fecha todas as conexões.
    * 
-   * @throws IOException exceção de entrada ou saída 
+   * @throws IOException
+   *           exceção de entrada ou saída
    */
-  private void fechaConexoes() throws IOException {
-    for (SocketChannel canal : canais) {
-      canal.finishConnect();
-      canal.close();
+  private void fechaConexoes() throws HappyEyeBallsException {
+    try {
+      for (final SocketChannel canal : canais) {
+        canal.finishConnect();
+        canal.close();
+      }
+      selector.close();
+      canais.clear();
+    } catch (IOException excep) {
+      throw new HappyEyeBallsException("Erro ao fechar os canais", excep);
     }
-    selector.close();
-    canais.clear();
+  }
+
+  /**
+   * Inicializa os canais para conecções asincronas.
+   * 
+   * @throws IOException
+   *           exceção de interrupção
+   */
+  private void inicializaCanais() throws IOException {
+    // Cria o selector para realizar as conexões de forma assíncrona.
+    selector = Selector.open();
+    canais = new ArrayList<SocketChannel>(enderecosIp.size());
+    for (final InetAddress endereco : enderecosIp) {
+      // Cria os canais e os registram no selector
+      final SocketChannel canal = SocketChannel.open();
+      canal.configureBlocking(false);
+      canal.register(selector, SelectionKey.OP_CONNECT,
+          new Object[] { endereco, System.currentTimeMillis() });
+      canal.connect(new InetSocketAddress(endereco, porta));
+      canais.add(canal);
+    }
+  }
+
+  /**
+   * Verifica as conecções e retorna o melhor Ip.
+   * 
+   * @return
+   * @throws IOException
+   * @throws HappyEyeBallsException
+   */
+  private Amostra checaCanais() throws IOException, HappyEyeBallsException {
+    InetAddress melhor = null;
+    long tempoFim = 0;
+    if (selector.select(tempoTimeOut) > 0) {
+      final long fim = System.currentTimeMillis();
+      long melhorTempo = Long.MAX_VALUE;
+      final Set<SelectionKey> chaves = selector.selectedKeys();
+      for (final SelectionKey chave : chaves) {
+        final Object[] dados = (Object[]) chave.attachment();
+        final long tempo = fim - (Long) (dados[1]);
+        if (tempo < melhorTempo) {
+          melhorTempo = tempo;
+          melhor = (InetAddress) (dados[0]);
+        }
+      }
+      tempoFim = melhorTempo;
+      System.out.println("Ip: " + melhor.getHostAddress() + " em " + tempoFim + " milisegundos");
+    } else {
+      throw new HappyEyeBallsException("Tempo de conexão expirado");
+    }
+    return new Amostra(melhor, tempoFim);
   }
 
   /**
@@ -79,49 +136,22 @@ public class MelhorIp implements Callable<Object[]> {
    * @throws IOException
    *           Exceção caso ocorra algum problema.
    */
-  private Object[] melhorIp() throws IOException {
-    InetAddress melhor = null;
-    long tempoFim = 0;
-    // Cria o selector para realizar as conexões de forma assíncrona.
-    selector = Selector.open();
-    canais = new ArrayList<SocketChannel>(enderecosIp.size());
-    for (InetAddress endereco : enderecosIp) {
-      // Cria os canais e os registram no selector
-      SocketChannel canal = SocketChannel.open();
-      canal.configureBlocking(false);
-      Long inicio = System.currentTimeMillis();
-      canal.connect(new InetSocketAddress(endereco, porta));
-      canal.register(selector, SelectionKey.OP_CONNECT, new Object[] { endereco, inicio });
-      canais.add(canal);
-    }
-    // Espera uma ou mais conexões ocorrerem ou o tempo expirar.
-    if (selector.select(tempoTimeOut) > 0) {
-      long fim = System.currentTimeMillis();
-      long melhorTempo = Long.MAX_VALUE;
-      Set<SelectionKey> chaves = selector.selectedKeys();
-      for (SelectionKey chave : chaves) {
-        Object[] dados = (Object[]) chave.attachment();
-        long tempo = fim - (Long) (dados[1]);
-        if (tempo < melhorTempo) {
-          melhorTempo = tempo;
-          melhor = (InetAddress) (dados[0]);
-        }
-      }
-      tempoFim = melhorTempo;
-      System.out.println("Ip: " + melhor.getHostAddress() + " em " + tempoFim + " milisegundos");
-    } else {
+  private Amostra melhorIp() throws HappyEyeBallsException {
+    try {
+      inicializaCanais();
+      return checaCanais();
+    } catch (IOException excep) {
+      throw new HappyEyeBallsException("Erro ao verificar os IPs.", excep);
+    } finally {
       fechaConexoes();
-      throw new IOException("Tempo de conexão expirado");
     }
-    fechaConexoes();
-    Object[] ret = new Object[2];
-    ret[0] = melhor;
-    ret[1] = tempoFim;
-    return ret;
   }
 
+  /**
+   * Executa a tarefa de buscar o melhor Ip.
+   */
   @Override
-  public Object[] call() throws Exception {
+  public Amostra call() throws HappyEyeBallsException {
     return melhorIp();
   }
 
