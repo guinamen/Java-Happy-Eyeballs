@@ -93,4 +93,9 @@ public class Amostra implements Comparable<Amostra>, Serializable {
     return outro == null ? 1 : Long.compare(getTempoTotal(), outro.getTempoTotal());
   }
 
+  @Override
+  public String toString() {
+    return "Amostra [enderecoIp=" + enderecoIp + ", " + getTempoTotal() + "]";
+  }
+
 }

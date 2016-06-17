@@ -187,26 +187,46 @@ public final class HappyEyeballs {
     InetAddress melhor = null;
     Amostra melhorIpV6 = null;
     Amostra melhorIpV4 = null;
-    final MelhorIp ipv6Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV6, porta);
-    final MelhorIp ipv4Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV4, porta);
-    final Future<Amostra> ipv6Futuro = executor.submit(ipv6Tarefa);
-    final Future<Amostra> ipv4Futuro = executor.submit(ipv4Tarefa);
-    // Dispara as tarefas de verificar o melhor IP em paralelo
-    try {
-      melhorIpV6 = ipv6Futuro.get();
-    } catch (InterruptedException exce) {
-      System.out.println("Rede IPV6 fora do ar");
-    } catch (ExecutionException exce) {
-      System.out
-          .println("Não foi possível conectar-se IPV6: " + exce.getCause().getLocalizedMessage());
+    Future<Amostra> ipv6Futuro = null;
+    Future<Amostra> ipv4Futuro = null;
+    if (enderecosIpV6 != null && !enderecosIpV6.isEmpty()) {
+      try {
+        final MelhorIp ipv6Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV6, porta);
+        ipv6Futuro = executor.submit(ipv6Tarefa);
+      } catch (HappyEyeBallsException e) {
+        e.printStackTrace();
+      }
     }
-    try {
-      melhorIpV4 = ipv4Futuro.get();
-    } catch (InterruptedException exce) {
-      exce.printStackTrace();
-    } catch (ExecutionException excep) {
-      System.out
-          .println("Não foi possível conectar-se IPV4: " + excep.getCause().getLocalizedMessage());
+
+    if (enderecosIpV4 != null && !enderecosIpV4.isEmpty()) {
+      try {
+        final MelhorIp ipv4Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV4, porta);
+        ipv4Futuro = executor.submit(ipv4Tarefa);
+      } catch (HappyEyeBallsException e) {
+        e.printStackTrace();
+      }
+    }
+
+    // Dispara as tarefas de verificar o melhor IP em paralelo
+    if (ipv6Futuro != null) {
+      try {
+        melhorIpV6 = ipv6Futuro.get();
+      } catch (InterruptedException exce) {
+        System.out.println("Rede IPV6 fora do ar");
+      } catch (ExecutionException exce) {
+        System.out
+            .println("Não foi possível conectar-se IPV6: " + exce.getCause().getLocalizedMessage());
+      }
+    }
+    if (ipv4Futuro != null) {
+      try {
+        melhorIpV4 = ipv4Futuro.get();
+      } catch (InterruptedException exce) {
+        exce.printStackTrace();
+      } catch (ExecutionException excep) {
+        System.out.println(
+            "Não foi possível conectar-se IPV4: " + excep.getCause().getLocalizedMessage());
+      }
     }
     // Verifica se existem endereços IPV6
     if (melhorIpV6 == null) {
@@ -234,8 +254,8 @@ public final class HappyEyeballs {
   public static void main(final String... args) {
     try {
       HappyEyeballs.getSingleHappyEyeballs().obterIp("www.google.com.br", 80);
-      HappyEyeballs.getSingleHappyEyeballs().obterIp("www.facebook.com.br", 80);
-      HappyEyeballs.getSingleHappyEyeballs().obterIp("www.yahoo.com.br", 80);
+      // HappyEyeballs.getSingleHappyEyeballs().obterIp("www.facebook.com.br", 80);
+      // HappyEyeballs.getSingleHappyEyeballs().obterIp("www.yahoo.com.br", 80);
     } catch (IOException exce) {
       exce.printStackTrace();
     } finally {

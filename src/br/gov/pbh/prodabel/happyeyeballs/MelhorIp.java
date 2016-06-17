@@ -54,8 +54,14 @@ public class MelhorIp implements Callable<Amostra> {
    *          Porta para teste de conectividade.
    */
   public MelhorIp(final long tempoTimeOut, final List<? extends InetAddress> enderecosIpV,
-      final int porta) {
+      final int porta) throws HappyEyeBallsException {
     super();
+    if (enderecosIpV == null || enderecosIpV.isEmpty()) {
+      throw new HappyEyeBallsException("Lista de endereços não pode estar vazia.");
+    }
+    if (porta <= 0 || porta > Short.MAX_VALUE) {
+      throw new HappyEyeBallsException("A porta de conexão deve ser válida.");
+    }
     this.tempoTimeOut = tempoTimeOut;
     this.enderecosIp = enderecosIpV;
     this.porta = porta;
@@ -121,6 +127,8 @@ public class MelhorIp implements Callable<Amostra> {
     } else {
       throw new HappyEyeBallsException("Tempo de conexão expirado");
     }
+    System.out.println(amostras);
+    System.out.println(amostras.first());
     return amostras.first();
   }
 
@@ -144,6 +152,8 @@ public class MelhorIp implements Callable<Amostra> {
 
   /**
    * Executa a tarefa de buscar o melhor Ip.
+   * 
+   * @return o ip com o menor tempo de conecção ou nulo caso a lista esteja vazia
    */
   @Override
   public Amostra call() throws HappyEyeBallsException {
