@@ -54,11 +54,22 @@ public class Amostra implements Comparable<Amostra>, Serializable {
     return enderecoIp;
   }
 
+  /**
+   * Retorna o tempo em que a conecção terminou.
+   * 
+   * @return tempo em milisegundos
+   */
   public long getTempoFim() {
     return tempoFim;
   }
 
-  public void setTempoFim(long tempoFim) {
+  /**
+   * Define o tempo em que a conecção terminou.
+   * 
+   * @param tempoFim
+   *          tempo em milisegundos
+   */
+  public void setTempoFim(final long tempoFim) {
     this.tempoFim = tempoFim;
   }
 
@@ -93,6 +104,11 @@ public class Amostra implements Comparable<Amostra>, Serializable {
     return outro == null ? 1 : Long.compare(getTempoTotal(), outro.getTempoTotal());
   }
 
+  /**
+   * Retorna a representação em texto do objeto.
+   * 
+   * @return string que representa o objeto
+   */
   @Override
   public String toString() {
     return "Amostra [enderecoIp=" + enderecoIp + ", " + getTempoTotal() + "]";

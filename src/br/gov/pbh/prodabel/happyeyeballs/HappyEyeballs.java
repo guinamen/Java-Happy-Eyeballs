@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.util.ArrayList;
+import java.net.UnknownHostException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -114,14 +115,64 @@ public final class HappyEyeballs {
   }
 
   /**
-   * Finaliza o pool de threads e limpa o cache para evitar memory leak. Executar ao finalizar o
-   * programa.
+   * Finaliza o pool de threads e limpa o cache. Executar ao finalizar o programa.
    */
   public void terminarPoolThread() {
-    executor.shutdown();
-    CACHE.clear();
+    synchronized (MUTEX) {
+      executor.shutdown();
+      CACHE.clear();
+      single = null;
+    }
   }
 
+  /**
+   * Busca itens no cache.
+   * 
+   * @param nome
+   *          nome e porta do serviço
+   * @return endereço ip, ou nulo caso não exista no cache
+   * @throws ItemNaoEncontrado
+   *           caso o item não exista.
+   */
+  private InetAddress verificaCache(final String nome) throws ItemNaoEncontrado {
+    // Varre o cache
+    if (CACHE.containsKey(nome)) {
+      final CacheItem item = CACHE.get(nome);
+      // Verifica se o tempo expirou
+      synchronized (MUTEX) {
+        if (System.currentTimeMillis() - item.getTempoAcesso() > dnsExpiracao) {
+          return item.getEndereco();
+        } else {
+          CACHE.remove(nome);
+        }
+      }
+    }
+    throw new ItemNaoEncontrado();
+  }
+
+  /**
+   * Obtem todos os ip de um nome.
+   * 
+   * @param nome
+   *          nome do servidor
+   * @param enderecosIpV4
+   *          lista para adicionar os endereçõs IPv4
+   * @param enderecosIpV6
+   *          lista para adicionar os endereçõs IPv6
+   * @throws UnknownHostException
+   *           caso não encontre o servidor.
+   */
+  private void obtemIpsPeloNome(final String nome, final List<Inet4Address> enderecosIpV4,
+      final List<Inet6Address> enderecosIpV6) throws UnknownHostException {
+    // Separa os IPs
+    for (final InetAddress endereco : InetAddress.getAllByName(nome)) {
+      if (endereco instanceof Inet4Address) {
+        enderecosIpV4.add((Inet4Address) endereco);
+      } else {
+        enderecosIpV6.add((Inet6Address) endereco);
+      }
+    }
+  }
   /**
    * Obtem o ip segundo o algoritmo Happy Eyeballs.
    * 
@@ -134,39 +185,20 @@ public final class HappyEyeballs {
    *           Caso ocorra alguma exceção.
    */
   public InetAddress obterIp(final String nomeRede, final int porta) throws IOException {
-    // Varre o cache
-    if (CACHE.containsKey(nomeRede)) {
-      final CacheItem item = CACHE.get(nomeRede);
-      long tempoDecorrido;
-      // Verifica se o tempo expirou
-      synchronized (MUTEX) {
-        tempoDecorrido = System.currentTimeMillis() - item.getTempoAcesso();
-      }
-      if (tempoDecorrido < dnsExpiracao) {
-        return item.getEndereco();
-      } else {
-        CACHE.remove(nomeRede);
-      }
+    final String nome = new StringBuffer(nomeRede).append(":").append(porta).toString();
+    InetAddress enderecoIp;
+    try {
+      enderecoIp = verificaCache(nome);
+    } catch (ItemNaoEncontrado e) {
+      // Busca todos os ips
+      final List<Inet4Address> enderecosIpV4 = new LinkedList<Inet4Address>();
+      final List<Inet6Address> enderecosIpV6 = new LinkedList<Inet6Address>();
+      obtemIpsPeloNome(nome, enderecosIpV4, enderecosIpV6);
+      // Busca o melhor tempo de conecção
+      enderecoIp = obterMelhorIp(enderecosIpV4, enderecosIpV6, porta);
+      CACHE.put(nome, new CacheItem(enderecoIp, System.currentTimeMillis()));
     }
-    // Busca todos os ips
-    final InetAddress[] enderecos = InetAddress.getAllByName(nomeRede);
-    final List<Inet4Address> enderecosIpV4 = new ArrayList<Inet4Address>(enderecos.length);
-    final List<Inet6Address> enderecosIpV6 = new ArrayList<Inet6Address>(enderecos.length);
-    // Separa os IPs
-    for (final InetAddress endereco : enderecos) {
-      if (endereco instanceof Inet4Address) {
-        enderecosIpV4.add((Inet4Address) endereco);
-      } else {
-        enderecosIpV6.add((Inet6Address) endereco);
-      }
-    }
-    // Busca o melhor IP
-    final InetAddress melhorIp = obterMelhorIp(enderecosIpV4, enderecosIpV6, porta);
-    enderecosIpV4.clear();
-    enderecosIpV6.clear();
-    final CacheItem item = new CacheItem(melhorIp, System.currentTimeMillis());
-    CACHE.put(nomeRede, item);
-    return melhorIp;
+    return enderecoIp;
   }
 
   /**
@@ -252,14 +284,15 @@ public final class HappyEyeballs {
    *          parâmetros de inicialização do teste
    */
   public static void main(final String... args) {
+    HappyEyeballs singleton = HappyEyeballs.getSingleHappyEyeballs();
     try {
-      HappyEyeballs.getSingleHappyEyeballs().obterIp("www.google.com.br", 80);
+      singleton.obterIp("www.google.com.br", 80);
       // HappyEyeballs.getSingleHappyEyeballs().obterIp("www.facebook.com.br", 80);
       // HappyEyeballs.getSingleHappyEyeballs().obterIp("www.yahoo.com.br", 80);
     } catch (IOException exce) {
       exce.printStackTrace();
     } finally {
-      HappyEyeballs.getSingleHappyEyeballs().terminarPoolThread();
+      singleton.terminarPoolThread();
     }
 
   }
