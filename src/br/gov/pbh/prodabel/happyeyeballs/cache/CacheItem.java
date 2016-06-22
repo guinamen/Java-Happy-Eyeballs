@@ -1,7 +1,6 @@
-package br.gov.pbh.prodabel.happyeyeballs;
+package br.gov.pbh.prodabel.happyeyeballs.cache;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 
 /**
  * Item do cache para o algoritmo Happy Eyeballs.
@@ -9,7 +8,7 @@ import java.net.InetAddress;
  * @author guilherme
  *
  */
-public class CacheItem implements Serializable {
+public class CacheItem<T> implements Serializable {
   /**
    * Número serial.
    */
@@ -17,7 +16,7 @@ public class CacheItem implements Serializable {
   /**
    * Endereço.
    */
-  private final InetAddress endereco;
+  private final T item;
   /**
    * Tempo em que o endereço foi adicionado no cache.
    */
@@ -31,27 +30,27 @@ public class CacheItem implements Serializable {
    * @param tempoAcesso
    *          Tempo em que o item foi adicionado.
    */
-  public CacheItem(final InetAddress endereco, final long tempoAcesso) {
+  public CacheItem(final T item, final long tempoAcesso) {
     super();
-    this.endereco = endereco;
+    this.item = item;
     this.tempoAcesso = tempoAcesso;
   }
 
   /**
-   * Retorna o endereço.
+   * Retorna o item armazenado.
    * 
-   * @return endereço ip
+   * @return
    */
-  public InetAddress getEndereco() {
-    return endereco;
+  public T getItem() {
+    return item;
   }
 
   /**
-   * Retorna o tempo de acesso.
+   * Retorna o tempo em que o objeto foi criado.
    * 
-   * @return tempo de acesso
+   * @return tempo em milisegundos
    */
-  public Long getTempoAcesso() {
+  public long getTempoAcesso() {
     return tempoAcesso;
   }
 
