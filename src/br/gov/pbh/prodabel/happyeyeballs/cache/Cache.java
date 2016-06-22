@@ -39,6 +39,23 @@ public class Cache<T> {
   }
 
   /**
+   * Verifica se o tempo do item no cache expirou.
+   * 
+   * @param nome
+   *          nome do serviço
+   * @param item
+   *          item a ser verificado
+   * @return verdadadeiro caso o item expirou, ou falço caso contrário.
+   */
+  private boolean expirou(final String nome, final CacheItem<T> item) {
+    final boolean expirou = item.getTempoAcesso() > tempoExpiracao ? true : false;
+    if (expirou) {
+      mapa.remove(nome);
+    }
+    return expirou;
+  }
+
+  /**
    * Busca itens no cache.
    * 
    * @param nome
@@ -47,15 +64,13 @@ public class Cache<T> {
    * @throws ItemNaoEncontrado
    *           caso o item não exista.
    */
-  public T obtem(final String nome) throws ItemNaoEncontrado {
+  public CacheItem<T> obtem(final String nome) throws ItemNaoEncontrado {
     // Varre o cache
     if (mapa.containsKey(nome)) {
       final CacheItem<T> item = mapa.get(nome);
       // Verifica se o tempo expirou
-      if (item.getTempoAcesso() > tempoExpiracao) {
-        return item.getItem();
-      } else {
-        mapa.remove(nome);
+      if (!expirou(nome, item)) {
+        return item;
       }
     }
     throw new ItemNaoEncontrado();

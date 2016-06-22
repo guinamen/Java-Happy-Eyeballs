@@ -143,7 +143,7 @@ public final class HappyEyeballs {
     final String nome = new StringBuffer(nomeRede).append(":").append(porta).toString();
     InetAddress enderecoIp;
     try {
-      enderecoIp = cache.obtem(nome);
+      enderecoIp = cache.obtem(nome).getItem();
     } catch (ItemNaoEncontrado e) {
       // Busca todos os ips
       final List<Inet4Address> enderecosIpV4 = new LinkedList<Inet4Address>();
