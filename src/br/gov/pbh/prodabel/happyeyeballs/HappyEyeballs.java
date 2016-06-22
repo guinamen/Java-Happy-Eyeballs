@@ -181,6 +181,7 @@ public final class HappyEyeballs {
         final MelhorIp ipv6Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV6, porta);
         ipv6Futuro = executor.submit(ipv6Tarefa);
       } catch (HappyEyeBallsException e) {
+        // TODO implantar log
         e.printStackTrace();
       }
     }
@@ -190,6 +191,7 @@ public final class HappyEyeballs {
         final MelhorIp ipv4Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV4, porta);
         ipv4Futuro = executor.submit(ipv4Tarefa);
       } catch (HappyEyeBallsException e) {
+        // TODO implantar log
         e.printStackTrace();
       }
     }
@@ -201,6 +203,7 @@ public final class HappyEyeballs {
       } catch (InterruptedException exce) {
         System.out.println("Rede IPV6 fora do ar");
       } catch (ExecutionException exce) {
+        // TODO implantar log
         System.out
             .println("Não foi possível conectar-se IPV6: " + exce.getCause().getLocalizedMessage());
       }
@@ -211,6 +214,7 @@ public final class HappyEyeballs {
       } catch (InterruptedException exce) {
         exce.printStackTrace();
       } catch (ExecutionException excep) {
+        // TODO implantar log
         System.out.println(
             "Não foi possível conectar-se IPV4: " + excep.getCause().getLocalizedMessage());
       }
