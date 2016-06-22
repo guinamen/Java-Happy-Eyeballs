@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import br.gov.pbh.prodabel.happyeyeballs.cache.Cache;
-import br.gov.pbh.prodabel.happyeyeballs.cache.CacheItem;
-import br.gov.pbh.prodabel.happyeyeballs.cache.ItemNaoEncontrado;
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.Configuration;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.xml.XmlConfiguration;
 
 /**
  * Happy EyeBalls em Java. Algoritmo RFC 6555.
@@ -27,7 +30,7 @@ public final class HappyEyeballs {
   /**
    * Cache para armazenar as resoluções dos nomes.
    */
-  private static Cache<InetAddress> cache;
+  private Cache<String, InetAddress> cache;
   /**
    * Semáforo para bloquear as threads para cálculo de tempo de expiração.
    */
@@ -38,14 +41,14 @@ public final class HappyEyeballs {
   private static HappyEyeballs single;
 
   /**
+   * Tempo de expiração da conecção.
+   */
+  private final long coneccaoExpiracao;
+
+  /**
    * Pool de threads para paralelizar a resolução de nomes.
    */
   private transient final ExecutorService executor;
-
-  /**
-   * Tempo de expiração de conecção.
-   */
-  private final long coneccaoExpiracao;
 
   /**
    * Construtor privado para garantir única instancia da classe.
@@ -57,25 +60,12 @@ public final class HappyEyeballs {
    * @param numThread
    *          Número de threads do pool de threads.
    */
-  private HappyEyeballs(final long cacheExpiracao, final long coneccaoExpiracao,
-      final int numThread) {
+  private HappyEyeballs(final long coneccaoExpiracao, final int numThread,
+      final Cache<String, InetAddress> cache) {
     super();
-    synchronized (MUTEX) {
-      if (cache == null) {
-        cache = new Cache<InetAddress>(cacheExpiracao);
-      }
-    }
     this.coneccaoExpiracao = coneccaoExpiracao;
+    this.cache = cache;
     this.executor = Executors.newFixedThreadPool(numThread);
-  }
-
-  /**
-   * Retorna o tempo de expiração da resolução do nome.
-   * 
-   * @return tempo em milisegundos
-   */
-  public long getCacheExpiracao() {
-    return cache.getTempoExpiracao();
   }
 
   /**
@@ -86,9 +76,16 @@ public final class HappyEyeballs {
   public static HappyEyeballs getSingleHappyEyeballs() {
     // TODO Forma melhor de fornecer os parâmetros de configuração do
     // algoritmo.
+    final URL myUrl = ClassLoader.class.getResource("/cache.xml");
+    final Configuration xmlConfig = new XmlConfiguration(myUrl);
+    final CacheManager cacheManager = CacheManagerBuilder.newCacheManager(xmlConfig);
+    cacheManager.init();
+
+    Cache<String, InetAddress> preConfigured = cacheManager.getCache("happyeyeballs", String.class,
+        InetAddress.class);
     synchronized (MUTEX) {
       if (single == null) {
-        single = new HappyEyeballs(300L, 3000L, 4);
+        single = new HappyEyeballs(300L, 4, preConfigured);
       }
     }
     return single;
@@ -102,7 +99,7 @@ public final class HappyEyeballs {
     synchronized (MUTEX) {
       single = null;
     }
-    cache.limpa();
+    cache.clear();
   }
 
   /**
@@ -142,16 +139,17 @@ public final class HappyEyeballs {
   public InetAddress obterIp(final String nomeRede, final int porta) throws IOException {
     final String nome = new StringBuffer(nomeRede).append(":").append(porta).toString();
     InetAddress enderecoIp;
-    try {
-      enderecoIp = cache.obtem(nome).getItem();
-    } catch (ItemNaoEncontrado e) {
+    enderecoIp = cache.get(nome);
+    if (enderecoIp == null) {
       // Busca todos os ips
       final List<Inet4Address> enderecosIpV4 = new LinkedList<Inet4Address>();
       final List<Inet6Address> enderecosIpV6 = new LinkedList<Inet6Address>();
       obtemIpsPeloNome(nomeRede, enderecosIpV4, enderecosIpV6);
       // Busca o melhor tempo de conecção
       enderecoIp = obterMelhorIp(enderecosIpV4, enderecosIpV6, porta);
-      cache.adiciona(nome, new CacheItem<InetAddress>(enderecoIp, System.currentTimeMillis()));
+      if (enderecoIp != null) {
+        cache.put(nome, enderecoIp);
+      }
     }
     return enderecoIp;
   }
