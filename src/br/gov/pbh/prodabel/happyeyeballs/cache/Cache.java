@@ -15,7 +15,7 @@ public class Cache<T> {
   /**
    * Cache para armazenar as resoluções dos nomes.
    */
-  private final Map<String, CacheItem<T>> mapa = new ConcurrentHashMap<String, CacheItem<T>>();
+  private final Map<String, CacheItem<T>> mapa;
 
   /**
    * Tempo de expiração em milisegundos.
@@ -35,6 +35,7 @@ public class Cache<T> {
   public Cache(final long tempoExpiracao) {
     super();
     this.tempoExpiracao = tempoExpiracao;
+    this.mapa = new ConcurrentHashMap<String, CacheItem<T>>();
   }
 
   /**
@@ -51,11 +52,7 @@ public class Cache<T> {
     if (mapa.containsKey(nome)) {
       final CacheItem<T> item = mapa.get(nome);
       // Verifica se o tempo expirou
-      boolean expirou = false;
-      synchronized (MUTEX) {
-        expirou = System.currentTimeMillis() - item.getTempoAcesso() > tempoExpiracao;
-      }
-      if (expirou) {
+      if (item.getTempoAcesso() > tempoExpiracao) {
         return item.getItem();
       } else {
         mapa.remove(nome);

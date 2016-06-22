@@ -51,7 +51,9 @@ public class MelhorIp implements Callable<Amostra> {
    * @param enderecosIpV
    *          Lista de IPs para testar.
    * @param porta
-   *          Porta para teste de conectividade.
+   *          Porta para teste de conectividade
+   * @throws HappyEyeBallsException
+   *           caso a lista estiver vazia ou nula ou caso a porta esteja fora do range
    */
   public MelhorIp(final long tempoTimeOut, final List<? extends InetAddress> enderecosIpV,
       final int porta) throws HappyEyeBallsException {
@@ -127,9 +129,9 @@ public class MelhorIp implements Callable<Amostra> {
     } else {
       throw new HappyEyeBallsException("Tempo de conexão expirado");
     }
-    System.out.println(amostras);
-    System.out.println(amostras.first());
-    return amostras.first();
+    final Amostra ret = amostras.first();
+    amostras.clear();
+    return ret;
   }
 
   /**

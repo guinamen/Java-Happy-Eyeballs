@@ -1,7 +1,6 @@
 /**
+ * Pacote para armazenar as classes de cache.
  * 
- */
-/**
  * @author guilherme
  *
  */

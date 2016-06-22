@@ -51,7 +51,7 @@ public class CacheItem<T> implements Serializable {
    * @return tempo em milisegundos
    */
   public long getTempoAcesso() {
-    return tempoAcesso;
+    return System.currentTimeMillis() - tempoAcesso;
   }
 
 }

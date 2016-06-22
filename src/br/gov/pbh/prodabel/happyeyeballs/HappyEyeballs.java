@@ -42,6 +42,9 @@ public final class HappyEyeballs {
    */
   private transient final ExecutorService executor;
 
+  /**
+   * Tempo de expiração de conecção.
+   */
   private final long coneccaoExpiracao;
 
   /**
@@ -239,8 +242,8 @@ public final class HappyEyeballs {
     HappyEyeballs singleton = HappyEyeballs.getSingleHappyEyeballs();
     try {
       singleton.obterIp("www.google.com.br", 80);
-      // HappyEyeballs.getSingleHappyEyeballs().obterIp("www.facebook.com.br", 80);
-      // HappyEyeballs.getSingleHappyEyeballs().obterIp("www.yahoo.com.br", 80);
+      singleton.obterIp("www.facebook.com.br", 80);
+      singleton.obterIp("www.yahoo.com.br", 80);
     } catch (IOException exce) {
       exce.printStackTrace();
     } finally {
