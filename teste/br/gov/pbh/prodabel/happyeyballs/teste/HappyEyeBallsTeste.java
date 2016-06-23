@@ -1,7 +1,5 @@
 package br.gov.pbh.prodabel.happyeyballs.teste;
 
-import static org.junit.Assert.fail;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -19,17 +17,15 @@ public class HappyEyeBallsTeste {
   public void setUp() throws Exception {
     singleton = HappyEyeballs.getSingleHappyEyeballs();
   }
-
+  
   @Test
-  public void testaConeccao() {
-    try {
-      LOGGER.info(singleton.obterIp("www.google.com.br", 80).toString());
-    } catch (HappyEyeBallsException exc) {
-      LOGGER.error("Erro:", exc);
-      fail("Erro de io");
-    } finally {
-      singleton.terminarPoolThread();
-    }
+  public void testaConeccao() throws HappyEyeBallsException {
+    LOGGER.info(singleton.obterIp("www.google.com.br", 80).toString());
+  }
+  
+  @Test(expected=HappyEyeBallsException.class)
+  public void testaConeccaoErro() throws HappyEyeBallsException {
+    LOGGER.info(singleton.obterIp("www.facasfjlerjwl.com.br", 80).toString());
   }
 
 }

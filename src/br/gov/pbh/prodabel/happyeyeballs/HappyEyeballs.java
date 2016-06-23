@@ -80,12 +80,12 @@ public final class HappyEyeballs {
    */
   public static HappyEyeballs getSingleHappyEyeballs() {
     // TODO Forma melhor de fornecer os parâmetros de configuração do algoritmo.
-    final URL myUrl = ClassLoader.class.getResource("/cache.xml");
-    final Configuration xmlConfig = new XmlConfiguration(myUrl);
-    final CacheManager cacheManager = CacheManagerBuilder.newCacheManager(xmlConfig);
-    cacheManager.init();
     synchronized (MUTEX) {
       if (single == null) {
+        final URL myUrl = ClassLoader.class.getResource("/cache.xml");
+        final Configuration xmlConfig = new XmlConfiguration(myUrl);
+        final CacheManager cacheManager = CacheManagerBuilder.newCacheManager(xmlConfig);
+        cacheManager.init();
         single = new HappyEyeballs(300L, 4,
             cacheManager.getCache("happyeyeballs", String.class, InetAddress.class));
       }
@@ -148,7 +148,7 @@ public final class HappyEyeballs {
   public InetAddress obterIp(final String nomeRede, final int porta) throws HappyEyeBallsException {
     final String nome = new StringBuffer(nomeRede).append(":").append(porta).toString();
     final InetAddress enderecoIp;
-    if (cache.containsKey(nome)) {      
+    if (cache.containsKey(nome)) {
       enderecoIp = cache.get(nome);
       LOGGER.debug("Menor tempo de conecçao no cache -> {}:{} {}", nomeRede, porta, enderecoIp);
     } else {
