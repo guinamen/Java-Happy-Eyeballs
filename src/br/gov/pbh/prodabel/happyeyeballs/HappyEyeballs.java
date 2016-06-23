@@ -18,6 +18,8 @@ import org.ehcache.CacheManager;
 import org.ehcache.config.Configuration;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.xml.XmlConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Happy EyeBalls em Java. Algoritmo RFC 6555.
@@ -27,6 +29,10 @@ import org.ehcache.xml.XmlConfiguration;
  */
 public final class HappyEyeballs {
 
+  /**
+   * Classe de log.
+   */
+  private static final Logger LOGGER = LoggerFactory.getLogger(HappyEyeballs.class);
   /**
    * Cache para armazenar as resoluções dos nomes.
    */
@@ -74,18 +80,15 @@ public final class HappyEyeballs {
    * @return Única instância da classe.
    */
   public static HappyEyeballs getSingleHappyEyeballs() {
-    // TODO Forma melhor de fornecer os parâmetros de configuração do
-    // algoritmo.
+    // TODO Forma melhor de fornecer os parâmetros de configuração do algoritmo.
     final URL myUrl = ClassLoader.class.getResource("/cache.xml");
     final Configuration xmlConfig = new XmlConfiguration(myUrl);
     final CacheManager cacheManager = CacheManagerBuilder.newCacheManager(xmlConfig);
     cacheManager.init();
-
-    Cache<String, InetAddress> preConfigured = cacheManager.getCache("happyeyeballs", String.class,
-        InetAddress.class);
     synchronized (MUTEX) {
       if (single == null) {
-        single = new HappyEyeballs(300L, 4, preConfigured);
+        single = new HappyEyeballs(300L, 4,
+            cacheManager.getCache("happyeyeballs", String.class, InetAddress.class));
       }
     }
     return single;
@@ -125,6 +128,7 @@ public final class HappyEyeballs {
       }
     }
   }
+
   /**
    * Obtem o ip segundo o algoritmo Happy Eyeballs.
    * 
@@ -138,20 +142,64 @@ public final class HappyEyeballs {
    */
   public InetAddress obterIp(final String nomeRede, final int porta) throws IOException {
     final String nome = new StringBuffer(nomeRede).append(":").append(porta).toString();
-    InetAddress enderecoIp;
-    enderecoIp = cache.get(nome);
+    InetAddress enderecoIp = cache.get(nome);
     if (enderecoIp == null) {
       // Busca todos os ips
       final List<Inet4Address> enderecosIpV4 = new LinkedList<Inet4Address>();
       final List<Inet6Address> enderecosIpV6 = new LinkedList<Inet6Address>();
       obtemIpsPeloNome(nomeRede, enderecosIpV4, enderecosIpV6);
       // Busca o melhor tempo de conecção
-      enderecoIp = obterMelhorIp(enderecosIpV4, enderecosIpV6, porta);
-      if (enderecoIp != null) {
+      Amostra amostra = obterMelhorIp(enderecosIpV4, enderecosIpV6, porta);
+      if (amostra != null) {
+        enderecoIp = amostra.getEnderecoIp();
         cache.put(nome, enderecoIp);
       }
     }
     return enderecoIp;
+  }
+
+  /**
+   * Cria a atividade para buscar os tempo de conecção.
+   * 
+   * @param enderecosIp
+   *          Lista de endereços IP
+   * @param porta
+   *          porta do serviço
+   * @return tarefa ser executada ou nulo caso não consiga
+   */
+  private Future<Amostra> criaAtividade(final List<? extends InetAddress> enderecosIp,
+      final int porta) {
+    Future<Amostra> tarefa = null;
+    if (enderecosIp != null && !enderecosIp.isEmpty()) {
+      try {
+        final MelhorIp melhorIp = new MelhorIp(coneccaoExpiracao, enderecosIp, porta);
+        tarefa = executor.submit(melhorIp);
+      } catch (HappyEyeBallsException exec) {
+        LOGGER.error("Erro ao obter ip", exec);
+      }
+    }
+    return tarefa;
+  }
+
+  /**
+   * Executa a tarefa e retorna a Amosta.
+   * 
+   * @param tarefa
+   *          tarefa para buscar o tempo de execução
+   * @return amostra do tempo de conecção
+   */
+  private Amostra executarTarefa(final Future<Amostra> tarefa) {
+    Amostra ret = null;
+    try {
+      if (tarefa != null) {
+        ret = tarefa.get();
+      }
+    } catch (InterruptedException exce) {
+      LOGGER.error("Thread interrmpida", exce);
+    } catch (ExecutionException exce) {
+      LOGGER.error("Erro de execução da thread", exce);
+    }
+    return ret;
   }
 
   /**
@@ -167,91 +215,22 @@ public final class HappyEyeballs {
    * @throws IOException
    *           Exceção caso ocorra algum problema.
    */
-  private InetAddress obterMelhorIp(final List<Inet4Address> enderecosIpV4,
+  private Amostra obterMelhorIp(final List<Inet4Address> enderecosIpV4,
       final List<Inet6Address> enderecosIpV6, final int porta) throws IOException {
-    InetAddress melhor = null;
-    Amostra melhorIpV6 = null;
-    Amostra melhorIpV4 = null;
-    Future<Amostra> ipv6Futuro = null;
-    Future<Amostra> ipv4Futuro = null;
-    if (enderecosIpV6 != null && !enderecosIpV6.isEmpty()) {
-      try {
-        final MelhorIp ipv6Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV6, porta);
-        ipv6Futuro = executor.submit(ipv6Tarefa);
-      } catch (HappyEyeBallsException e) {
-        // TODO implantar log
-        e.printStackTrace();
-      }
-    }
-
-    if (enderecosIpV4 != null && !enderecosIpV4.isEmpty()) {
-      try {
-        final MelhorIp ipv4Tarefa = new MelhorIp(coneccaoExpiracao, enderecosIpV4, porta);
-        ipv4Futuro = executor.submit(ipv4Tarefa);
-      } catch (HappyEyeBallsException e) {
-        // TODO implantar log
-        e.printStackTrace();
-      }
-    }
-
-    // Dispara as tarefas de verificar o melhor IP em paralelo
-    if (ipv6Futuro != null) {
-      try {
-        melhorIpV6 = ipv6Futuro.get();
-      } catch (InterruptedException exce) {
-        System.out.println("Rede IPV6 fora do ar");
-      } catch (ExecutionException exce) {
-        // TODO implantar log
-        System.out
-            .println("Não foi possível conectar-se IPV6: " + exce.getCause().getLocalizedMessage());
-      }
-    }
-    if (ipv4Futuro != null) {
-      try {
-        melhorIpV4 = ipv4Futuro.get();
-      } catch (InterruptedException exce) {
-        exce.printStackTrace();
-      } catch (ExecutionException excep) {
-        // TODO implantar log
-        System.out.println(
-            "Não foi possível conectar-se IPV4: " + excep.getCause().getLocalizedMessage());
-      }
-    }
+    
+    final Future<Amostra> ipv6Futuro = criaAtividade(enderecosIpV6, porta);
+    final Future<Amostra> ipv4Futuro = criaAtividade(enderecosIpV4, porta);
+    final Amostra melhorIpV6 = executarTarefa(ipv6Futuro);
+    final Amostra melhorIpV4 = executarTarefa(ipv4Futuro);
     // Verifica se existem endereços IPV6
-    if (melhorIpV6 == null) {
-      if (melhorIpV4 != null) {
-        melhor = melhorIpV4.getEnderecoIp();
-      }
+    Amostra melhor;
+    if (melhorIpV6 != null && melhorIpV4 != null) {
+      melhor = melhorIpV4.compareTo(melhorIpV6) >= 0 ? melhorIpV6 : melhorIpV4;
+    } else if (melhorIpV6 == null) {
+      melhor = melhorIpV4;
     } else {
-      if (melhorIpV4 == null) {
-        melhor = melhorIpV6.getEnderecoIp();
-      } else {
-        melhor = melhorIpV4.compareTo(melhorIpV6) >= 0
-            ? melhorIpV6.getEnderecoIp()
-            : melhorIpV4.getEnderecoIp();
-      }
-    }
+      melhor = melhorIpV4;
+    } 
     return melhor;
   }
-
-  /**
-   * Simples teste.
-   * 
-   * @param args
-   *          parâmetros de inicialização do teste
-   */
-  public static void main(final String... args) {
-    HappyEyeballs singleton = HappyEyeballs.getSingleHappyEyeballs();
-    try {
-      singleton.obterIp("www.google.com.br", 80);
-      singleton.obterIp("www.facebook.com.br", 80);
-      singleton.obterIp("www.yahoo.com.br", 80);
-    } catch (IOException exce) {
-      exce.printStackTrace();
-    } finally {
-      singleton.terminarPoolThread();
-    }
-
-  }
-
 }
