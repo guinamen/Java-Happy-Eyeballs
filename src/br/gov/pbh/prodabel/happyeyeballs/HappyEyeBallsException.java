@@ -1,6 +1,3 @@
-/**
- * 
- */
 package br.gov.pbh.prodabel.happyeyeballs;
 
 /**
@@ -11,14 +8,14 @@ package br.gov.pbh.prodabel.happyeyeballs;
 public class HappyEyeBallsException extends Exception {
 
   /**
-   * Serial Version ID
+   * Serial Version ID.
    */
   private static final long serialVersionUID = -7992763649460204317L;
 
   /**
    * Cria uma exceção com uma mensagem e a causa.
-   * @param message mensagem
-   * @param cause causa
+   * @param mensagem mensagem
+   * @param causa causa
    */
   public HappyEyeBallsException(final String mensagem, final Throwable causa) {
     super(mensagem, causa);
@@ -26,7 +23,7 @@ public class HappyEyeBallsException extends Exception {
 
   /**
    * Cria uma exceção com uma mensagem.
-   * @param message mensagem
+   * @param mensagem mensagem
    */
   public HappyEyeBallsException(final String mensagem) {
     super(mensagem);

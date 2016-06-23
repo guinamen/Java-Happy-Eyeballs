@@ -1,6 +1,5 @@
 package br.gov.pbh.prodabel.happyeyeballs;
 
-import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -54,7 +53,7 @@ public final class HappyEyeballs {
   /**
    * Pool de threads para paralelizar a resolução de nomes.
    */
-  private transient final ExecutorService executor;
+  private final transient ExecutorService executor;
 
   /**
    * Construtor privado para garantir única instancia da classe.
@@ -114,18 +113,24 @@ public final class HappyEyeballs {
    *          lista para adicionar os endereçõs IPv4
    * @param enderecosIpV6
    *          lista para adicionar os endereçõs IPv6
-   * @throws UnknownHostException
+   * @throws HappyEyeBallsException
    *           caso não encontre o servidor.
    */
   private void obtemIpsPeloNome(final String nome, final List<Inet4Address> enderecosIpV4,
-      final List<Inet6Address> enderecosIpV6) throws UnknownHostException {
+      final List<Inet6Address> enderecosIpV6) throws HappyEyeBallsException {
     // Separa os IPs
-    for (final InetAddress endereco : InetAddress.getAllByName(nome)) {
-      if (endereco instanceof Inet4Address) {
-        enderecosIpV4.add((Inet4Address) endereco);
-      } else {
-        enderecosIpV6.add((Inet6Address) endereco);
+    try {
+      final InetAddress[] enderecos = InetAddress.getAllByName(nome);
+      LOGGER.debug("{} -> {}", nome, enderecos);
+      for (final InetAddress endereco : enderecos) {
+        if (endereco instanceof Inet4Address) {
+          enderecosIpV4.add((Inet4Address) endereco);
+        } else {
+          enderecosIpV6.add((Inet6Address) endereco);
+        }
       }
+    } catch (UnknownHostException exp) {
+      throw new HappyEyeBallsException("Erro ao buscar nome", exp);
     }
   }
 
@@ -137,22 +142,31 @@ public final class HappyEyeballs {
    * @param porta
    *          Porta para teste de conexão.
    * @return O ip resolvido ou null caso ocorra algum problema.
-   * @throws IOException
+   * @throws HappyEyeBallsException
    *           Caso ocorra alguma exceção.
    */
-  public InetAddress obterIp(final String nomeRede, final int porta) throws IOException {
+  public InetAddress obterIp(final String nomeRede, final int porta) throws HappyEyeBallsException {
     final String nome = new StringBuffer(nomeRede).append(":").append(porta).toString();
-    InetAddress enderecoIp = cache.get(nome);
-    if (enderecoIp == null) {
+    final InetAddress enderecoIp;
+    if (cache.containsKey(nome)) {      
+      enderecoIp = cache.get(nome);
+      LOGGER.debug("Menor tempo de conecçao no cache -> {}:{} {}", nomeRede, porta, enderecoIp);
+    } else {
       // Busca todos os ips
       final List<Inet4Address> enderecosIpV4 = new LinkedList<Inet4Address>();
       final List<Inet6Address> enderecosIpV6 = new LinkedList<Inet6Address>();
       obtemIpsPeloNome(nomeRede, enderecosIpV4, enderecosIpV6);
+      LOGGER.debug("IPV6 -> {}:{} {}", nomeRede, porta, enderecosIpV6);
+      LOGGER.debug("IPV4 -> {}:{} {}", nomeRede, porta, enderecosIpV4);
       // Busca o melhor tempo de conecção
       Amostra amostra = obterMelhorIp(enderecosIpV4, enderecosIpV6, porta);
       if (amostra != null) {
         enderecoIp = amostra.getEnderecoIp();
+        LOGGER.debug("Menor tempo de conecçao -> {}:{} {}", nomeRede, porta, enderecoIp);
         cache.put(nome, enderecoIp);
+      } else {
+        LOGGER.debug("Menor tempo não encontrado");
+        enderecoIp = null;
       }
     }
     return enderecoIp;
@@ -168,15 +182,11 @@ public final class HappyEyeballs {
    * @return tarefa ser executada ou nulo caso não consiga
    */
   private Future<Amostra> criaAtividade(final List<? extends InetAddress> enderecosIp,
-      final int porta) {
+      final int porta) throws HappyEyeBallsException {
     Future<Amostra> tarefa = null;
     if (enderecosIp != null && !enderecosIp.isEmpty()) {
-      try {
-        final MelhorIp melhorIp = new MelhorIp(coneccaoExpiracao, enderecosIp, porta);
-        tarefa = executor.submit(melhorIp);
-      } catch (HappyEyeBallsException exec) {
-        LOGGER.error("Erro ao obter ip", exec);
-      }
+      final MelhorIp melhorIp = new MelhorIp(coneccaoExpiracao, enderecosIp, porta);
+      tarefa = executor.submit(melhorIp);
     }
     return tarefa;
   }
@@ -188,16 +198,16 @@ public final class HappyEyeballs {
    *          tarefa para buscar o tempo de execução
    * @return amostra do tempo de conecção
    */
-  private Amostra executarTarefa(final Future<Amostra> tarefa) {
+  private Amostra executarTarefa(final Future<Amostra> tarefa) throws HappyEyeBallsException {
     Amostra ret = null;
     try {
       if (tarefa != null) {
         ret = tarefa.get();
       }
     } catch (InterruptedException exce) {
-      LOGGER.error("Thread interrmpida", exce);
+      throw new HappyEyeBallsException("Thread interrmpida", exce);
     } catch (ExecutionException exce) {
-      LOGGER.error("Erro de execução da thread", exce);
+      throw new HappyEyeBallsException("Erro de execução da thread", exce);
     }
     return ret;
   }
@@ -212,25 +222,25 @@ public final class HappyEyeballs {
    * @param porta
    *          Porta de conexão
    * @return O melhor IP
-   * @throws IOException
+   * @throws HappyEyeBallsException
    *           Exceção caso ocorra algum problema.
    */
   private Amostra obterMelhorIp(final List<Inet4Address> enderecosIpV4,
-      final List<Inet6Address> enderecosIpV6, final int porta) throws IOException {
-    
+      final List<Inet6Address> enderecosIpV6, final int porta) throws HappyEyeBallsException {
+
     final Future<Amostra> ipv6Futuro = criaAtividade(enderecosIpV6, porta);
     final Future<Amostra> ipv4Futuro = criaAtividade(enderecosIpV4, porta);
     final Amostra melhorIpV6 = executarTarefa(ipv6Futuro);
     final Amostra melhorIpV4 = executarTarefa(ipv4Futuro);
     // Verifica se existem endereços IPV6
-    Amostra melhor;
+    final Amostra melhor;
     if (melhorIpV6 != null && melhorIpV4 != null) {
       melhor = melhorIpV4.compareTo(melhorIpV6) >= 0 ? melhorIpV6 : melhorIpV4;
     } else if (melhorIpV6 == null) {
       melhor = melhorIpV4;
     } else {
       melhor = melhorIpV4;
-    } 
+    }
     return melhor;
   }
 }

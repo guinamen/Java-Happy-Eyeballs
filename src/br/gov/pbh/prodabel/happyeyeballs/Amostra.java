@@ -34,7 +34,7 @@ public class Amostra implements Comparable<Amostra>, Serializable {
   /**
    * Construtor.
    * 
-   * @param ip
+   * @param enderecoIp
    *          endereço ip
    * @param tempoInicio
    *          tempo em milisegundos do início para conectar.
@@ -96,8 +96,7 @@ public class Amostra implements Comparable<Amostra>, Serializable {
    * 
    * @param outro
    *          a amostra para ser comparada
-   * @return número negativo, zero, ou positivo sendo esse objeto menor que, igual a, ou maior do
-   *         que o outro objeto
+   * @return número negativo, zero, ou positivo caso seja menor, igual, ou maior
    */
   @Override
   public final int compareTo(final Amostra outro) {
