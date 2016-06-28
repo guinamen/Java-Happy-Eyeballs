@@ -1,0 +1,96 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="HappyEyeballs" default="publish">
+
+    <target name="probe-proxy">
+        <condition property="proxy.enabled">
+            <and>
+                <isset property="proxy.host" />
+                <isreachable host="${proxy.host}" />
+            </and>
+        </condition>
+    </target>
+
+    <target name="proxy" depends="probe-proxy" if="proxy.enabled">
+        <property name="proxy.port" value="80" />
+        <property name="proxy.user" value="" />
+        <property name="proxy.pass" value="" />
+        <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}" proxyuser="${proxy.user}" proxypassword="${proxy.pass}" />
+    </target>
+
+    <!-- ========== Configurações padrão ========== -->
+    <property environment="env" />
+    <property file="${ant.project.name}.properties" />
+    <tstamp>
+        <format property="TODAY_DEF" pattern="yyyyMMddhhmms" />
+    </tstamp>
+
+    <!-- ========== Classpaht ========== -->
+    <path id="project.class.path">
+        <fileset dir="${lib.dir}" includes="**/*.jar" />
+    </path>
+
+    <!-- ========== Alvos para limpar o projeto ========== -->
+    <target name="clean-source">
+        <delete dir="${bui.dir}" />
+    </target>
+
+    <target name="clean-lib">
+        <delete dir="${lib.dir}" />
+    </target>
+
+    <target name="clean-pack">
+        <delete file="${ant.project.name}.${pac.typ}" />
+    </target>
+
+    <target name="clean" description="--> limpa o projeto" depends="clean-source,clean-lib,clean-pack" />
+
+    <!-- ========== Alvos para compilacao ========== -->
+    <target name="javac" depends="resolve">
+        <mkdir dir="${bui.dir}" />
+        <mkdir dir="${bui.dir}/META-INF" />
+        <manifest file="${bui.dir}/META-INF/MANIFEST.MF">
+            <attribute name="Built-By" value="${user.name}" />
+            <section name="common">
+                <attribute name="Specification-Title" value="${ant.project.name}" />
+                <attribute name="Specification-Version" value="${ver.maj}.${ver.min}" />
+                <attribute name="Specification-Vendor" value="Ventek" />
+                <attribute name="Implementation-Title" value="${ant.project.name}" />
+                <attribute name="Implementation-Version" value="${ver.maj}.${ver.min}.${TODAY_DEF}" />
+                <attribute name="Implementation-Vendor" value="Ventek" />
+                <attribute name="Sealed" value="true" />
+            </section>
+        </manifest>
+        <javac srcdir="${src.dir}" includes="**" encoding="${src.enc}" fork="on" includeAntRuntime="no" destdir="${bui.dir}" nowarn="false" debug="true" debuglevel="lines,vars,source">
+            <classpath refid="project.class.path" />
+        </javac>
+        <copy todir="${bui.dir}">
+            <fileset dir="${src.dir}" excludes="**/*.java" />
+        </copy>
+    </target>
+
+    <target name="compile" description="--> compila codigo font" depends="javac" />
+
+    <!-- ========== Alvos para empacotamento ========== -->
+    <target name="jar" depends="compile">
+        <jar destfile="${ant.project.name}.${pac.typ}" basedir="${bui.dir}" encoding="${src.enc}" level="9" manifest="${bui.dir}/META-INF/MANIFEST.MF" index="true" indexMetaInf="true" />
+    </target>
+
+    <target name="pack" description="--> empacota o codigo" depends="jar" />
+
+    <!-- ========== Alvos para bibliotecas ========== -->
+    <target name="resolve" description="--> resolve dependencias">
+        <ivy:retrieve type="jar" pattern="${lib.dir}/[conf]/[artifact].[ext]" log="quiet" sync="ture" />
+    </target>
+
+    <!-- ========== Alvos para publicar o artefato ========== -->
+    <target name="publish" description="--> publica artefato" depends="pack">
+        <ivy:publish resolver="local" overwrite="true">
+            <artifacts pattern="[artifact].[ext]" />
+        </ivy:publish>
+    </target>
+
+    <!-- ========== Alvos de QA ========== -->
+    <dirname property="included.basedir" file="${qa.xml}" />
+    <property file="${included.basedir}/qa.properties" />
+    <include file="${qa.xml}" optional="true" />
+</project>
+
