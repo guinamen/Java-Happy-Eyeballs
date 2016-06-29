@@ -1,21 +1,5 @@
 <project xmlns:ivy="antlib:org.apache.ivy.ant" name="HappyEyeballs" default="publish">
 
-    <target name="probe-proxy">
-        <condition property="proxy.enabled">
-            <and>
-                <isset property="proxy.host" />
-                <isreachable host="${proxy.host}" />
-            </and>
-        </condition>
-    </target>
-
-    <target name="proxy" depends="probe-proxy" if="proxy.enabled">
-        <property name="proxy.port" value="80" />
-        <property name="proxy.user" value="" />
-        <property name="proxy.pass" value="" />
-        <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}" proxyuser="${proxy.user}" proxypassword="${proxy.pass}" />
-    </target>
-
     <!-- ========== Configurações padrão ========== -->
     <property environment="env" />
     <property file="${ant.project.name}.properties" />
@@ -52,10 +36,10 @@
             <section name="common">
                 <attribute name="Specification-Title" value="${ant.project.name}" />
                 <attribute name="Specification-Version" value="${ver.maj}.${ver.min}" />
-                <attribute name="Specification-Vendor" value="Ventek" />
+                <attribute name="Specification-Vendor" value="Prodabel" />
                 <attribute name="Implementation-Title" value="${ant.project.name}" />
                 <attribute name="Implementation-Version" value="${ver.maj}.${ver.min}.${TODAY_DEF}" />
-                <attribute name="Implementation-Vendor" value="Ventek" />
+                <attribute name="Implementation-Vendor" value="Prodabel" />
                 <attribute name="Sealed" value="true" />
             </section>
         </manifest>

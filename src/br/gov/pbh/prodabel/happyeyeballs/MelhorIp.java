@@ -143,7 +143,7 @@ public class MelhorIp implements Callable<Amostra> {
       }
       LOGGER.debug("Amostras: {}", amostras.toString());
       final Amostra ret = amostras.first();
-      LOGGER.debug("Amostra de melhor tempo: {}", ret.toString());
+      LOGGER.debug("Amostra de melhor tempo: {}", ret);
       amostras.clear();
       return ret;
     } catch (IOException excep) {
