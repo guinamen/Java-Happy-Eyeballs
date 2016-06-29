@@ -1,4 +1,4 @@
-package br.gov.pbh.prodabel.happyeyballs.teste;
+package br.gov.pbh.prodabel.happyeyeballs.teste;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
