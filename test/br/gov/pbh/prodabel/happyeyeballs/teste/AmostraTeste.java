@@ -87,9 +87,10 @@ public class AmostraTeste {
     Assert.assertFalse(amostra1.equals(null));
     Assert.assertFalse(amostra1.equals(amostra2));
     Assert.assertFalse(amostra1.equals(new Integer(0)));
+    Assert.assertFalse(amostra5.equals(amostra4));
     Assert.assertTrue(amostra1.equals(amostra1));
     Assert.assertTrue(amostra1.equals(amostra4));
-    Assert.assertTrue(amostra5.equals(amostra4));
+    
   }
 
 }
