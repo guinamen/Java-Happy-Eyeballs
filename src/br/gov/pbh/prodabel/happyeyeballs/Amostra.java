@@ -2,6 +2,7 @@ package br.gov.pbh.prodabel.happyeyeballs;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.Arrays;
 
 /**
  * Amostra de tempo de conecção.
@@ -111,6 +112,42 @@ public class Amostra implements Comparable<Amostra>, Serializable {
   @Override
   public String toString() {
     return "Amostra [enderecoIp=" + enderecoIp + ", " + getTempoTotal() + "]";
+  }
+
+  /**
+   * Retorna o hash code deste objeto.
+   * 
+   * @return valor de hash desse objeto.
+   */
+  @Override
+  public int hashCode() {
+    return Arrays
+        .hashCode(new Object[] { super.hashCode(), enderecoIp, this.tempoFim, this.tempoInicio });
+  }
+
+  /**
+   * Verfica se esse objeto é igual ao parâmetro.
+   * 
+   * @param other
+   *          outro objeto
+   * @return verdadeiro caso os objetos sejam iguais.
+   */
+  @Override
+  public boolean equals(Object objeto) {
+    boolean igual = false;
+    if (objeto == this) {
+      igual = true;
+    } else if (objeto != null && objeto instanceof Amostra) {
+      Amostra outro = (Amostra) objeto;
+      boolean enderecoIgual;
+      if (enderecoIp == null) {
+        enderecoIgual = enderecoIp == outro.enderecoIp;
+      } else {
+        enderecoIgual = enderecoIp.equals(outro.enderecoIp);
+      }
+      igual = enderecoIgual & tempoFim == outro.tempoFim & tempoInicio == outro.tempoInicio;
+    }
+    return igual;
   }
 
 }
