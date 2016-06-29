@@ -239,7 +239,7 @@ public final class HappyEyeballs {
     } else if (melhorIpV6 == null) {
       melhor = melhorIpV4;
     } else {
-      melhor = melhorIpV4;
+      melhor = melhorIpV6;
     }
     return melhor;
   }
