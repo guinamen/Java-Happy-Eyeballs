@@ -1,2 +1,6 @@
 /bin/
 /lib/
+.ant-targets-build.xml
+HappyEyeballs.jar
+QA/
+junit/
