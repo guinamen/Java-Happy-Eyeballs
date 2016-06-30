@@ -60,7 +60,7 @@
     <target name="compile" description="--> compila codigo font" depends="javac" />
 
     <!-- ========== Alvos para compilacao dos testes ========== -->
-    <target name="javac.test" depends="javac">
+    <target name="javac.test" depends="javac" if="${test}">
         <mkdir dir="${bui.tst.dir}" />
         <javac srcdir="${test.dir}" includes="**" encoding="${src.enc}" fork="on" includeAntRuntime="no" destdir="${bui.tst.dir}" nowarn="false" debug="true" debuglevel="lines,vars,source">
             <classpath refid="lib" />
@@ -72,7 +72,7 @@
     </target>
 
     <!-- ========== Alvos para execução dos testes ========== -->
-    <target name="test" depends="javac.test" description="--> executa todos os testes">
+    <target name="test" depends="javac.test" description="--> executa todos os testes" if="${test}">
         <mkdir dir="${test.junit.dir}" />
         <junit printsummary="yes" haltonerror="true" haltonfailure="true" fork="true" dir="${test.junit.dir}">
             <classpath refid="lib" />
