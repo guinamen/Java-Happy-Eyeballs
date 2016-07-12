@@ -49,9 +49,16 @@
                 <attribute name="Sealed" value="true" />
             </section>
         </manifest>
-        <javac srcdir="${src.dir}" includes="**" encoding="${src.enc}" fork="on" includeAntRuntime="no" destdir="${bui.src.dir}" nowarn="false" debug="true" debuglevel="lines,vars,source">
-            <classpath refid="lib" />
-        </javac>
+        <javac srcdir="${src.dir}"
+            includes="**"
+            encoding="${src.enc}"
+            fork="on"
+            includeAntRuntime="no"
+            destdir="${bui.src.dir}"
+            nowarn="false"
+            debug="true"
+            debuglevel="lines,vars,source"
+            classpathref="lib" />
         <copy todir="${bui.src.dir}">
             <fileset dir="${src.dir}" excludes="**/*.java" />
         </copy>
@@ -62,8 +69,14 @@
     <!-- ========== Alvos para compilacao dos testes ========== -->
     <target name="javac.test" depends="javac" if="${test}">
         <mkdir dir="${bui.tst.dir}" />
-        <javac srcdir="${test.dir}" includes="**" encoding="${src.enc}" fork="on" includeAntRuntime="no" destdir="${bui.tst.dir}" nowarn="false" debug="true" debuglevel="lines,vars,source">
-            <classpath refid="lib" />
+        <javac srcdir="${test.dir}"
+            includes="**"
+            encoding="${src.enc}"
+            fork="on"
+            includeAntRuntime="no"
+            destdir="${bui.tst.dir}"
+            nowarn="false" debug="true"
+            debuglevel="lines,vars,source" classpathref="lib">
             <classpath refid="src" />
         </javac>
         <copy todir="${bui.tst.dir}">
@@ -87,7 +100,13 @@
 
     <!-- ========== Alvos para empacotamento ========== -->
     <target name="jar" depends="test">
-        <jar destfile="${ant.project.name}.${pac.typ}" basedir="${bui.src.dir}" encoding="${src.enc}" level="9" manifest="${bui.src.dir}/META-INF/MANIFEST.MF" index="true" indexMetaInf="true" />
+        <jar destfile="${ant.project.name}.${pac.typ}" 
+            basedir="${bui.src.dir}"
+            encoding="${src.enc}"
+            level="9"
+            manifest="${bui.src.dir}/META-INF/MANIFEST.MF"
+            index="true"
+            indexMetaInf="true"/>
     </target>
 
     <target name="pack" description="--> empacota o codigo" depends="jar" />
