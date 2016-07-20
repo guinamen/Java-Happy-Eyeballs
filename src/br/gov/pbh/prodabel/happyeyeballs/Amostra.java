@@ -133,12 +133,12 @@ public class Amostra implements Comparable<Amostra>, Serializable {
    * @return verdadeiro caso os objetos sejam iguais.
    */
   @Override
-  public boolean equals(Object objeto) {
+  public boolean equals(final Object objeto) {
     boolean igual = false;
     if (objeto == this) {
       igual = true;
-    } else if (objeto != null && objeto instanceof Amostra) {
-      Amostra outro = (Amostra) objeto;
+    } else if (objeto instanceof Amostra) {
+      final Amostra outro = (Amostra) objeto;
       boolean enderecoIgual;
       if (enderecoIp == null) {
         enderecoIgual = enderecoIp == outro.enderecoIp;

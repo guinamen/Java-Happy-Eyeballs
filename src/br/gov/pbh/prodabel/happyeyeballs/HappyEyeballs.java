@@ -147,7 +147,7 @@ public final class HappyEyeballs {
    */
   public InetAddress obterIp(final String nomeRede, final int porta) throws HappyEyeBallsException {
     final String nome = new StringBuffer(nomeRede).append(":").append(porta).toString();
-    final InetAddress enderecoIp;
+    InetAddress enderecoIp;
     if (cache.containsKey(nome)) {
       enderecoIp = cache.get(nome);
       LOGGER.debug("Menor tempo de conecçao no cache -> {}:{} {}", nomeRede, porta, enderecoIp);
@@ -159,14 +159,14 @@ public final class HappyEyeballs {
       LOGGER.debug("IPV6 -> {}:{} {}", nomeRede, porta, enderecosIpV6);
       LOGGER.debug("IPV4 -> {}:{} {}", nomeRede, porta, enderecosIpV4);
       // Busca o melhor tempo de conecção
-      Amostra amostra = obterMelhorIp(enderecosIpV4, enderecosIpV6, porta);
-      if (amostra != null) {
+      final Amostra amostra = obterMelhorIp(enderecosIpV4, enderecosIpV6, porta);
+      if (amostra == null) {
+        LOGGER.debug("Menor tempo não encontrado");
+        enderecoIp = null;
+      } else {
         enderecoIp = amostra.getEnderecoIp();
         LOGGER.debug("Menor tempo de conecçao -> {}:{} {}", nomeRede, porta, enderecoIp);
         cache.put(nome, enderecoIp);
-      } else {
-        LOGGER.debug("Menor tempo não encontrado");
-        enderecoIp = null;
       }
     }
     return enderecoIp;
@@ -233,13 +233,13 @@ public final class HappyEyeballs {
     final Amostra melhorIpV6 = executarTarefa(ipv6Futuro);
     final Amostra melhorIpV4 = executarTarefa(ipv4Futuro);
     // Verifica se existem endereços IPV6
-    final Amostra melhor;
-    if (melhorIpV6 != null && melhorIpV4 != null) {
-      melhor = melhorIpV4.compareTo(melhorIpV6) >= 0 ? melhorIpV6 : melhorIpV4;
+    Amostra melhor;
+    if (melhorIpV4 == null && melhorIpV6 == null) {
+      melhor = null;
     } else if (melhorIpV6 == null) {
-      melhor = melhorIpV4;
+      melhor = melhorIpV4.compareTo(melhorIpV6) > 0 ? melhorIpV4 : melhorIpV6;
     } else {
-      melhor = melhorIpV6;
+      melhor = melhorIpV6.compareTo(melhorIpV4) >= 0 ? melhorIpV6 : melhorIpV4;
     }
     return melhor;
   }
