@@ -19,6 +19,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+
+
+
 /**
  * Happy EyeBalls em Java. Algoritmo RFC 6555.
  * 
@@ -31,10 +34,7 @@ public final class HappyEyeballs {
    * Classe de log.
    */
   private static final Logger LOGGER = LoggerFactory.getLogger(HappyEyeballs.class);
-  /**
-   * Cache para armazenar as resoluções dos nomes.
-   */
-  private Cache<String, InetAddress> cache;
+
   /**
    * Semáforo para bloquear as threads para cálculo de tempo de expiração.
    */
@@ -43,7 +43,10 @@ public final class HappyEyeballs {
    * Instância única do objeto (Singleton).
    */
   private static HappyEyeballs single;
-
+  /**
+   * Cache para armazenar as resoluções dos nomes.
+   */
+  private Cache<String, InetAddress> cache;
   /**
    * Tempo de expiração da conecção.
    */
