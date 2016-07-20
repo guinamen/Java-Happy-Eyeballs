@@ -128,7 +128,7 @@ public class Amostra implements Comparable<Amostra>, Serializable {
   /**
    * Verfica se esse objeto é igual ao parâmetro.
    * 
-   * @param other
+   * @param objeto
    *          outro objeto
    * @return verdadeiro caso os objetos sejam iguais.
    */

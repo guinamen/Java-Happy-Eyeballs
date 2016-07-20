@@ -17,13 +17,13 @@ public class HappyEyeBallsTeste {
   public void setUp() throws Exception {
     singleton = HappyEyeballs.getSingleHappyEyeballs();
   }
-  
+
   @Test
   public void testaConeccao() throws HappyEyeBallsException {
     LOGGER.info(singleton.obterIp("www.google.com.br", 80).toString());
   }
-  
-  @Test(expected=HappyEyeBallsException.class)
+
+  @Test(expected = HappyEyeBallsException.class)
   public void testaConeccaoErro() throws HappyEyeBallsException {
     LOGGER.info(singleton.obterIp("www.facasfjlerjwl.com.br", 80).toString());
   }

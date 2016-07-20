@@ -1,5 +1,12 @@
 package br.gov.pbh.prodabel.happyeyeballs;
 
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.Configuration;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.xml.XmlConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -11,14 +18,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import org.ehcache.Cache;
-import org.ehcache.CacheManager;
-import org.ehcache.config.Configuration;
-import org.ehcache.config.builders.CacheManagerBuilder;
-import org.ehcache.xml.XmlConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Happy EyeBalls em Java. Algoritmo RFC 6555.
@@ -234,10 +233,8 @@ public final class HappyEyeballs {
     final Amostra melhorIpV4 = executarTarefa(ipv4Futuro);
     // Verifica se existem endereços IPV6
     Amostra melhor;
-    if (melhorIpV4 == null && melhorIpV6 == null) {
-      melhor = null;
-    } else if (melhorIpV6 == null) {
-      melhor = melhorIpV4.compareTo(melhorIpV6) > 0 ? melhorIpV4 : melhorIpV6;
+    if (melhorIpV6 == null) {
+      melhor = melhorIpV4;
     } else {
       melhor = melhorIpV6.compareTo(melhorIpV4) >= 0 ? melhorIpV6 : melhorIpV4;
     }

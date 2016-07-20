@@ -20,7 +20,7 @@ public class AmostraTeste {
   private Amostra amostra4;
   private Amostra amostra5;
   private static final long AGORA = System.currentTimeMillis();
-  
+
   @Before
   public void setUp() throws Exception {
     testAmostra();
@@ -50,7 +50,6 @@ public class AmostraTeste {
     Assert.assertEquals(amostra2.getTempoFim(), AGORA + 200L);
   }
 
-  
   @Test
   public void testGetTempoInicio() {
     Assert.assertEquals(amostra1.getTempoInicio(), AGORA);
@@ -76,7 +75,7 @@ public class AmostraTeste {
     LOGGER.info(amostra1.toString());
     LOGGER.info(amostra2.toString());
   }
-  
+
   @Test
   public void testHash() {
     LOGGER.info(Integer.toString(amostra1.hashCode()).toString());
@@ -90,7 +89,7 @@ public class AmostraTeste {
     Assert.assertFalse(amostra5.equals(amostra4));
     Assert.assertTrue(amostra1.equals(amostra1));
     Assert.assertTrue(amostra1.equals(amostra4));
-    
+
   }
 
 }

@@ -17,12 +17,12 @@ public class MelhorIpTeste {
   public void setUp() throws Exception {
   }
 
-  @Test(expected=HappyEyeBallsException.class)
+  @Test(expected = HappyEyeBallsException.class)
   public void testMelhorIpNulo() throws HappyEyeBallsException {
     MelhorIp ip = new MelhorIp(10L, null, 99);
   }
-  
-  @Test(expected=HappyEyeBallsException.class)
+
+  @Test(expected = HappyEyeBallsException.class)
   public void testMelhorIpPortaErrada() throws HappyEyeBallsException, UnknownHostException {
     List<InetAddress> a = new LinkedList<InetAddress>();
     a.add(InetAddress.getByName("127.0.0.1"));
