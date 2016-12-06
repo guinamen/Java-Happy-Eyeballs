@@ -44,11 +44,11 @@ public final class HappyEyeballs {
   /**
    * Cache para armazenar as resoluções dos nomes.
    */
-  private Cache<String, InetAddress> cache;
+  private final Cache<String, InetAddress> cache;
   /**
    * Tempo de expiração da conecção.
    */
-  private final long coneccaoExpiracao;
+  private transient final long coneccaoExpiracao;
 
   /**
    * Pool de threads para paralelizar a resolução de nomes.
@@ -120,9 +120,8 @@ public final class HappyEyeballs {
       final List<Inet6Address> enderecosIpV6) throws HappyEyeBallsException {
     // Separa os IPs
     try {
-      final InetAddress[] enderecos = InetAddress.getAllByName(nome);
-      LOGGER.debug("{} -> {}", nome, enderecos);
-      for (final InetAddress endereco : enderecos) {
+      for (final InetAddress endereco : InetAddress.getAllByName(nome)) {
+        LOGGER.debug("{} -> {}", nome, endereco);
         if (endereco instanceof Inet4Address) {
           enderecosIpV4.add((Inet4Address) endereco);
         } else {
@@ -147,7 +146,7 @@ public final class HappyEyeballs {
    */
   public InetAddress obterIp(final String nomeRede, final int porta) throws HappyEyeBallsException {
     final String nome = new StringBuffer(nomeRede).append(":").append(porta).toString();
-    InetAddress enderecoIp;
+    final InetAddress enderecoIp;
     if (cache.containsKey(nome)) {
       enderecoIp = cache.get(nome);
       LOGGER.debug("Menor tempo de conecçao no cache -> {}:{} {}", nomeRede, porta, enderecoIp);
@@ -161,8 +160,8 @@ public final class HappyEyeballs {
       // Busca o melhor tempo de conecção
       final Amostra amostra = obterMelhorIp(enderecosIpV4, enderecosIpV6, porta);
       if (amostra == null) {
-        LOGGER.debug("Menor tempo não encontrado");
         enderecoIp = null;
+        LOGGER.debug("Menor tempo não encontrado");
       } else {
         enderecoIp = amostra.getEnderecoIp();
         LOGGER.debug("Menor tempo de conecçao -> {}:{} {}", nomeRede, porta, enderecoIp);
@@ -183,12 +182,12 @@ public final class HappyEyeballs {
    */
   private Future<Amostra> criaAtividade(final List<? extends InetAddress> enderecosIp,
       final int porta) throws HappyEyeBallsException {
-    Future<Amostra> tarefa = null;
-    if (enderecosIp != null && !enderecosIp.isEmpty()) {
+    if (enderecosIp == null || enderecosIp.isEmpty()) {
+      throw new IllegalArgumentException("Lista de endereço inválida.");
+    } else {
       final MelhorIp melhorIp = new MelhorIp(coneccaoExpiracao, enderecosIp, porta);
-      tarefa = executor.submit(melhorIp);
+      return executor.submit(melhorIp);
     }
-    return tarefa;
   }
 
   /**
@@ -199,17 +198,17 @@ public final class HappyEyeballs {
    * @return amostra do tempo de conecção
    */
   private Amostra executarTarefa(final Future<Amostra> tarefa) throws HappyEyeBallsException {
-    Amostra ret = null;
     try {
-      if (tarefa != null) {
-        ret = tarefa.get();
+      if (tarefa == null) {
+        throw new IllegalArgumentException("Tarefa nula");
+      } else {
+        return tarefa.get();
       }
     } catch (InterruptedException exce) {
       throw new HappyEyeBallsException("Thread interrmpida", exce);
     } catch (ExecutionException exce) {
       throw new HappyEyeBallsException("Erro de execução da thread", exce);
     }
-    return ret;
   }
 
   /**

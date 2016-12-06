@@ -121,8 +121,7 @@ public class Amostra implements Comparable<Amostra>, Serializable {
    */
   @Override
   public int hashCode() {
-    return Arrays
-        .hashCode(new Object[] { super.hashCode(), enderecoIp, this.tempoFim, this.tempoInicio });
+    return Arrays.hashCode(new Object[] { super.hashCode(), enderecoIp, tempoFim, tempoInicio });
   }
 
   /**
@@ -134,18 +133,18 @@ public class Amostra implements Comparable<Amostra>, Serializable {
    */
   @Override
   public boolean equals(final Object objeto) {
-    boolean igual = false;
-    if (objeto == this) {
+    final boolean igual;
+    if (this == objeto) {
       igual = true;
     } else if (objeto instanceof Amostra) {
       final Amostra outro = (Amostra) objeto;
-      boolean enderecoIgual;
       if (enderecoIp == null) {
-        enderecoIgual = enderecoIp == outro.enderecoIp;
+        igual = false;
       } else {
-        enderecoIgual = enderecoIp.equals(outro.enderecoIp);
+        igual = enderecoIp.equals(outro.enderecoIp);
       }
-      igual = enderecoIgual & tempoFim == outro.tempoFim & tempoInicio == outro.tempoInicio;
+    } else {
+      igual = false;
     }
     return igual;
   }
