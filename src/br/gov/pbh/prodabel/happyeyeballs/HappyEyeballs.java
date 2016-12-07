@@ -48,7 +48,7 @@ public final class HappyEyeballs {
   /**
    * Tempo de expiração da conecção.
    */
-  private transient final long coneccaoExpiracao;
+  private final transient long coneccaoExpiracao;
 
   /**
    * Pool de threads para paralelizar a resolução de nomes.
