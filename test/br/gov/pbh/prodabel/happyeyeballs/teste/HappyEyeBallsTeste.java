@@ -1,5 +1,6 @@
 package br.gov.pbh.prodabel.happyeyeballs.teste;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -20,7 +21,12 @@ public class HappyEyeBallsTeste {
 
   @Test
   public void testaConeccao() throws HappyEyeBallsException {
+    try {
     LOGGER.info(singleton.obterIp("www.google.com.br", 80).toString());
+    } catch (Exception e) {
+      LOGGER.error("Erro ao obter www.google.com.br", e);
+      Assert.fail();
+    }
   }
 
   @Test(expected = HappyEyeBallsException.class)

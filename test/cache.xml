@@ -10,7 +10,7 @@
 		</eh:expiry>
 		<eh:resources>
 			<eh:heap unit="entries">2000</eh:heap>
-			<eh:offheap unit="MB">500</eh:offheap>
+			<eh:offheap unit="MB">100</eh:offheap>
 		</eh:resources>
 	</eh:cache>
 </eh:config>
