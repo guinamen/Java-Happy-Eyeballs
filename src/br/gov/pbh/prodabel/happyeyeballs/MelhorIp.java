@@ -31,7 +31,7 @@ public class MelhorIp implements Callable<Amostra> {
   /**
    * Tempo de expiração da atividade.
    */
-  private final transient  long tempoTimeOut;
+  private final transient long tempoTimeOut;
   /**
    * Lista de IPs.
    */

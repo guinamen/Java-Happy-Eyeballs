@@ -18,7 +18,8 @@ public class MelhorIpTeste {
   private static final Logger LOGGER = LoggerFactory.getLogger(MelhorIpTeste.class);
 
   @Before
-  public void setUp() throws Exception {}
+  public void setUp() throws Exception {
+  }
 
   @Test(expected = HappyEyeBallsException.class)
   public void testMelhorIpNulo() throws HappyEyeBallsException {
