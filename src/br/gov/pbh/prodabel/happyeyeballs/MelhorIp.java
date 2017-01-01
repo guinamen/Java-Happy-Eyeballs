@@ -31,7 +31,7 @@ public class MelhorIp implements Callable<Amostra> {
   /**
    * Tempo de expiração da atividade.
    */
-  private final transient  long tempoTimeOut;
+  private final transient long tempoTimeOut;
   /**
    * Lista de IPs.
    */
@@ -53,14 +53,10 @@ public class MelhorIp implements Callable<Amostra> {
   /**
    * Construtor simples.
    * 
-   * @param tempoTimeOut
-   *          Tempo de expiração de teste de conexão.
-   * @param enderecosIpV
-   *          Lista de IPs para testar.
-   * @param porta
-   *          Porta para teste de conectividade
-   * @throws HappyEyeBallsException
-   *           caso a lista estiver vazia ou nula, ou porta fora do range
+   * @param tempoTimeOut Tempo de expiração de teste de conexão.
+   * @param enderecosIpV Lista de IPs para testar.
+   * @param porta Porta para teste de conectividade
+   * @throws HappyEyeBallsException caso a lista estiver vazia ou nula, ou porta fora do range
    */
   public MelhorIp(final long tempoTimeOut, final List<? extends InetAddress> enderecosIpV,
       final int porta) throws HappyEyeBallsException {
@@ -79,14 +75,15 @@ public class MelhorIp implements Callable<Amostra> {
   /**
    * Fecha todas as conexões.
    * 
-   * @throws HappyEyeBallsException
-   *           exceção de entrada ou saída
+   * @throws HappyEyeBallsException exceção de entrada ou saída
    */
   private void fechaConexoes() throws HappyEyeBallsException {
     try {
       for (final SocketChannel canal : canais) {
-        canal.finishConnect();
-        canal.close();
+        if (canal.isConnected())
+          canal.finishConnect();
+        if (canal.isOpen())
+          canal.close();
       }
       selector.close();
       canais.clear();
@@ -98,8 +95,7 @@ public class MelhorIp implements Callable<Amostra> {
   /**
    * Inicializa os canais para conecções asincronas.
    * 
-   * @throws HappyEyeBallsException
-   *           caso ocorra algum erro
+   * @throws HappyEyeBallsException caso ocorra algum erro
    */
   private void inicializaCanais() throws HappyEyeBallsException {
     // Cria o selector para realizar as conexões de forma assíncrona.
@@ -124,8 +120,7 @@ public class MelhorIp implements Callable<Amostra> {
    * Verifica as conecções e retorna o melhor Ip.
    * 
    * @return Amostra com melhor tempo de conecção
-   * @throws HappyEyeBallsException
-   *           caso o tempo de conecção tenha expirado
+   * @throws HappyEyeBallsException caso o tempo de conecção tenha expirado
    */
   private Amostra checaCanais() throws HappyEyeBallsException {
     final SortedSet<Amostra> amostras = new TreeSet<Amostra>();
@@ -155,8 +150,7 @@ public class MelhorIp implements Callable<Amostra> {
    * Busca o melhor IP.
    * 
    * @return Tupla IP e tempo para conexão.
-   * @throws IOException
-   *           Exceção caso ocorra algum problema.
+   * @throws IOException Exceção caso ocorra algum problema.
    */
   private Amostra melhorIp() throws HappyEyeBallsException {
     try {

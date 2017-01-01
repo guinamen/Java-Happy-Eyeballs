@@ -247,7 +247,7 @@ public final class HappyEyeballs {
     if (melhorIpV6 == null) {
       melhor = melhorIpV4;
     } else {
-      melhor = melhorIpV6.compareTo(melhorIpV4) >= 0 ? melhorIpV6 : melhorIpV4;
+      melhor = melhorIpV6.compareTo(melhorIpV4) < 0 ? melhorIpV6 : melhorIpV4;
     }
     return melhor;
   }
