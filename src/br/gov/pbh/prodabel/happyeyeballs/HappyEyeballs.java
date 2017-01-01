@@ -238,10 +238,12 @@ public final class HappyEyeballs {
     if (enderecosIpV4 != null && !enderecosIpV4.isEmpty()) {
       ipv4Futuro = criaAtividade(enderecosIpV4, porta);
     }
-    if (ipv6Futuro != null)
+    if (ipv6Futuro != null) {
       melhorIpV6 = executarTarefa(ipv6Futuro);
-    if (ipv4Futuro != null)
+    }
+    if (ipv4Futuro != null) {
       melhorIpV4 = executarTarefa(ipv4Futuro);
+    }
     // Verifica se existem endereços IPV6
     Amostra melhor;
     if (melhorIpV6 == null) {

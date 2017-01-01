@@ -22,7 +22,7 @@ public class HappyEyeBallsTeste {
   @Test
   public void testaConeccao() throws HappyEyeBallsException {
     try {
-    LOGGER.info(singleton.obterIp("www.google.com.br", 80).toString());
+      LOGGER.info(singleton.obterIp("www.google.com.br", 80).toString());
     } catch (Exception e) {
       LOGGER.error("Erro ao obter www.google.com.br", e);
       Assert.fail();

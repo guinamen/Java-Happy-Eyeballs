@@ -80,10 +80,12 @@ public class MelhorIp implements Callable<Amostra> {
   private void fechaConexoes() throws HappyEyeBallsException {
     try {
       for (final SocketChannel canal : canais) {
-        if (canal.isConnected())
+        if (canal.isConnected()) {
           canal.finishConnect();
-        if (canal.isOpen())
+        }
+        if (canal.isOpen()) {
           canal.close();
+        }
       }
       selector.close();
       canais.clear();
