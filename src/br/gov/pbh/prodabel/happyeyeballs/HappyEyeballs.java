@@ -1,13 +1,5 @@
 package br.gov.pbh.prodabel.happyeyeballs;
 
-import org.ehcache.Cache;
-import org.ehcache.CacheManager;
-import org.ehcache.config.Configuration;
-import org.ehcache.config.builders.CacheManagerBuilder;
-import org.ehcache.xml.XmlConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -19,6 +11,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.Configuration;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.xml.XmlConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Happy EyeBalls em Java. Algoritmo RFC 6555.
@@ -58,12 +58,9 @@ public final class HappyEyeballs {
   /**
    * Construtor privado para garantir única instancia da classe.
    * 
-   * @param TEMPO_EXPIRACAO
-   *          Tempo de expiração da resolução de nome.
-   * @param TEMPO_TIMEOUT
-   *          Tempo de time out de conexão.
-   * @param numThread
-   *          Número de threads do pool de threads.
+   * @param TEMPO_EXPIRACAO Tempo de expiração da resolução de nome.
+   * @param TEMPO_TIMEOUT Tempo de time out de conexão.
+   * @param numThread Número de threads do pool de threads.
    */
   private HappyEyeballs(final long coneccaoExpiracao, final int numThread,
       final Cache<String, InetAddress> cache) {
@@ -79,7 +76,8 @@ public final class HappyEyeballs {
    * @return Única instância da classe.
    */
   public static HappyEyeballs getSingleHappyEyeballs() {
-    // TODO Forma melhor de fornecer os parâmetros de configuração do algoritmo.
+    // TODO Forma melhor de fornecer os parâmetros de configuração do
+    // algoritmo.
     synchronized (MUTEX) {
       if (single == null) {
         final URL myUrl = ClassLoader.class.getResource("/cache.xml");
@@ -107,14 +105,10 @@ public final class HappyEyeballs {
   /**
    * Obtem todos os ip de um nome.
    * 
-   * @param nome
-   *          nome do servidor
-   * @param enderecosIpV4
-   *          lista para adicionar os endereçõs IPv4
-   * @param enderecosIpV6
-   *          lista para adicionar os endereçõs IPv6
-   * @throws HappyEyeBallsException
-   *           caso não encontre o servidor.
+   * @param nome nome do servidor
+   * @param enderecosIpV4 lista para adicionar os endereçõs IPv4
+   * @param enderecosIpV6 lista para adicionar os endereçõs IPv6
+   * @throws HappyEyeBallsException caso não encontre o servidor.
    */
   private void obtemIpsPeloNome(final String nome, final List<Inet4Address> enderecosIpV4,
       final List<Inet6Address> enderecosIpV6) throws HappyEyeBallsException {
@@ -136,13 +130,10 @@ public final class HappyEyeballs {
   /**
    * Obtem o ip segundo o algoritmo Happy Eyeballs.
    * 
-   * @param nomeRede
-   *          Nome do servidor a ser resolvido.
-   * @param porta
-   *          Porta para teste de conexão.
+   * @param nomeRede Nome do servidor a ser resolvido.
+   * @param porta Porta para teste de conexão.
    * @return O ip resolvido ou null caso ocorra algum problema.
-   * @throws HappyEyeBallsException
-   *           Caso ocorra alguma exceção.
+   * @throws HappyEyeBallsException Caso ocorra alguma exceção.
    */
   public InetAddress obterIp(final String nomeRede, final int porta) throws HappyEyeBallsException {
     final String nome = new StringBuffer(nomeRede).append(":").append(porta).toString();
@@ -174,10 +165,8 @@ public final class HappyEyeballs {
   /**
    * Cria a atividade para buscar os tempo de conecção.
    * 
-   * @param enderecosIp
-   *          Lista de endereços IP
-   * @param porta
-   *          porta do serviço
+   * @param enderecosIp Lista de endereços IP
+   * @param porta porta do serviço
    * @return tarefa ser executada ou nulo caso não consiga
    */
   private Future<Amostra> criaAtividade(final List<? extends InetAddress> enderecosIp,
@@ -193,8 +182,7 @@ public final class HappyEyeballs {
   /**
    * Executa a tarefa e retorna a Amosta.
    * 
-   * @param tarefa
-   *          tarefa para buscar o tempo de execução
+   * @param tarefa tarefa para buscar o tempo de execução
    * @return amostra do tempo de conecção
    */
   private Amostra executarTarefa(final Future<Amostra> tarefa) throws HappyEyeBallsException {
@@ -214,15 +202,11 @@ public final class HappyEyeballs {
   /**
    * Obtem o melhor IP usando busca em threads e conexão assincrona.
    * 
-   * @param enderecosIpV4
-   *          Lista de IPV4
-   * @param enderecosIpV6
-   *          Lista de IPV6
-   * @param porta
-   *          Porta de conexão
+   * @param enderecosIpV4 Lista de IPV4
+   * @param enderecosIpV6 Lista de IPV6
+   * @param porta Porta de conexão
    * @return O melhor IP
-   * @throws HappyEyeBallsException
-   *           Exceção caso ocorra algum problema.
+   * @throws HappyEyeBallsException Exceção caso ocorra algum problema.
    */
   private Amostra obterMelhorIp(final List<Inet4Address> enderecosIpV4,
       final List<Inet6Address> enderecosIpV6, final int porta) throws HappyEyeBallsException {
