@@ -1,131 +1,122 @@
-<project xmlns:ivy="antlib:org.apache.ivy.ant" name="HappyEyeballs" default="publish">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="HappyEyeballs"
+	default="publish">
 
-    <!-- ========== Configurações padrão ========== -->
-    <property environment="env" />
-    <property file="${ant.project.name}.properties" />
-    <tstamp>
-        <format property="TODAY_DEF" pattern="yyyyMMddhhmms" />
-    </tstamp>
+	<!-- ========== Configurações padrão ========== -->
+	<property environment="env" />
+	<property file="${ant.project.name}.properties" />
+	<tstamp>
+		<format property="TODAY_DEF" pattern="yyyyMMddhhmms" />
+	</tstamp>
 
-    <!-- ========== Classpaht ========== -->
-    <path id="lib">
-        <fileset dir="${lib.dir}" includes="**/*.jar" />
-    </path>
-    <path id="src" location="${bui.src.dir}" />
-    <path id="tst" location="${bui.tst.dir}" />
+	<!-- ========== Classpaht ========== -->
+	<path id="lib">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+	</path>
+	<path id="src" location="${bui.src.dir}" />
+	<path id="tst" location="${bui.tst.dir}" />
 
-    <!-- ========== Alvos para limpar o projeto ========== -->
-    <target name="clean-bin">
-        <delete dir="${bui.base.dir}" />
-    </target>
+	<!-- ========== Alvos para limpar o projeto ========== -->
+	<target name="clean-bin">
+		<delete dir="${bui.base.dir}" />
+	</target>
 
-    <target name="clean-lib">
-        <delete dir="${lib.dir}" />
-    </target>
+	<target name="clean-lib">
+		<delete dir="${lib.dir}" />
+	</target>
 
-    <target name="clean-pack">
-        <delete file="${ant.project.name}.${pac.typ}" />
-    </target>
+	<target name="clean-pack">
+		<delete file="${ant.project.name}.${pac.typ}" />
+	</target>
 
-    <target name="clean-junit">
-        <delete dir="${test.junit.dir}" />
-    </target>
+	<target name="clean-junit">
+		<delete dir="${test.junit.dir}" />
+	</target>
 
-    <target name="clean" description="--> limpa o projeto" depends="clean-bin,clean-junit,clean-lib,clean-pack" />
+	<target name="clean" description="--> limpa o projeto"
+		depends="clean-bin,clean-junit,clean-lib,clean-pack" />
 
-    <!-- ========== Alvos para compilacao ========== -->
-    <target name="javac" depends="resolve">
-        <mkdir dir="${bui.src.dir}" />
-        <mkdir dir="${bui.src.dir}/META-INF" />
-        <manifest file="${bui.src.dir}/META-INF/MANIFEST.MF">
-            <attribute name="Built-By" value="${user.name}" />
-            <section name="common">
-                <attribute name="Specification-Title" value="${ant.project.name}" />
-                <attribute name="Specification-Version" value="${ver.maj}.${ver.min}" />
-                <attribute name="Specification-Vendor" value="Prodabel" />
-                <attribute name="Implementation-Title" value="${ant.project.name}" />
-                <attribute name="Implementation-Version" value="${ver.maj}.${ver.min}.${TODAY_DEF}" />
-                <attribute name="Implementation-Vendor" value="Prodabel" />
-                <attribute name="Sealed" value="true" />
-            </section>
-        </manifest>
-        <javac srcdir="${src.dir}"
-            includes="**"
-            encoding="${src.enc}"
-            fork="on"
-            includeAntRuntime="no"
-            destdir="${bui.src.dir}"
-            nowarn="false"
-            debug="true"
-            debuglevel="lines,vars,source"
-            classpathref="lib" />
-        <copy todir="${bui.src.dir}">
-            <fileset dir="${src.dir}" excludes="**/*.java" />
-        </copy>
-    </target>
+	<!-- ========== Alvos para compilacao ========== -->
+	<target name="javac" depends="resolve">
+		<mkdir dir="${bui.src.dir}" />
+		<mkdir dir="${bui.src.dir}/META-INF" />
+		<manifest file="${bui.src.dir}/META-INF/MANIFEST.MF">
+			<attribute name="Built-By" value="${user.name}" />
+			<section name="common">
+				<attribute name="Specification-Title" value="${ant.project.name}" />
+				<attribute name="Specification-Version" value="${ver.maj}.${ver.min}" />
+				<attribute name="Specification-Vendor" value="Prodabel" />
+				<attribute name="Implementation-Title" value="${ant.project.name}" />
+				<attribute name="Implementation-Version" value="${ver.maj}.${ver.min}.${TODAY_DEF}" />
+				<attribute name="Implementation-Vendor" value="Prodabel" />
+				<attribute name="Sealed" value="true" />
+			</section>
+		</manifest>
+		<javac srcdir="${src.dir}" includes="**" encoding="${src.enc}"
+			fork="on" includeAntRuntime="no" destdir="${bui.src.dir}" nowarn="false"
+			debug="true" debuglevel="lines,vars,source" classpathref="lib" />
+		<copy todir="${bui.src.dir}">
+			<fileset dir="${src.dir}" excludes="**/*.java" />
+		</copy>
+	</target>
 
-    <target name="compile" description="--> compila codigo font" depends="javac" />
+	<target name="compile" description="--> compila codigo font"
+		depends="javac" />
 
-    <!-- ========== Alvos para compilacao dos testes ========== -->
-    <target name="javac.test" depends="javac" if="${test}">
-        <mkdir dir="${bui.tst.dir}" />
-        <javac srcdir="${test.dir}"
-            includes="**"
-            encoding="${src.enc}"
-            fork="on"
-            includeAntRuntime="no"
-            destdir="${bui.tst.dir}"
-            nowarn="false" debug="true"
-            debuglevel="lines,vars,source" classpathref="lib">
-            <classpath refid="src" />
-        </javac>
-        <copy todir="${bui.tst.dir}">
-            <fileset dir="${test.dir}" excludes="**/*.java" />
-        </copy>
-    </target>
+	<!-- ========== Alvos para compilacao dos testes ========== -->
+	<target name="javac.test" depends="javac" if="${test}">
+		<mkdir dir="${bui.tst.dir}" />
+		<javac srcdir="${test.dir}" includes="**" encoding="${src.enc}"
+			fork="on" includeAntRuntime="no" destdir="${bui.tst.dir}" nowarn="false"
+			debug="true" debuglevel="lines,vars,source" classpathref="lib">
+			<classpath refid="src" />
+		</javac>
+		<copy todir="${bui.tst.dir}">
+			<fileset dir="${test.dir}" excludes="**/*.java" />
+		</copy>
+	</target>
 
-    <!-- ========== Alvos para execução dos testes ========== -->
-    <target name="test" depends="javac.test" description="--> executa todos os testes" if="${test}">
-        <mkdir dir="${test.junit.dir}" />
-        <junit printsummary="yes" haltonerror="true" haltonfailure="true" fork="true" dir="${test.junit.dir}">
-            <classpath refid="lib" />
-            <classpath refid="src" />
-            <classpath refid="tst" />
-            <jvmarg value="${test.jvmarg}" />
-            <test name="${test.suit}" todir="${test.junit.dir}">
-                <formatter type="xml" />
-            </test>
-        </junit>
-    </target>
+	<!-- ========== Alvos para execução dos testes ========== -->
+	<target name="test" depends="javac.test" description="--> executa todos os testes"
+		if="${test}">
+		<mkdir dir="${test.junit.dir}" />
+		<junit printsummary="yes" haltonerror="true" haltonfailure="true"
+			fork="true" dir="${test.junit.dir}">
+			<classpath refid="lib" />
+			<classpath refid="src" />
+			<classpath refid="tst" />
+			<jvmarg value="${test.jvmarg}" />
+			<test name="${test.suit}" todir="${test.junit.dir}">
+				<formatter type="xml" />
+			</test>
+		</junit>
+	</target>
 
-    <!-- ========== Alvos para empacotamento ========== -->
-    <target name="jar" depends="test">
-        <jar destfile="${ant.project.name}.${pac.typ}" 
-            basedir="${bui.src.dir}"
-            encoding="${src.enc}"
-            level="9"
-            manifest="${bui.src.dir}/META-INF/MANIFEST.MF"
-            index="true"
-            indexMetaInf="true"/>
-    </target>
+	<!-- ========== Alvos para empacotamento ========== -->
+	<target name="jar" depends="test">
+		<jar destfile="${ant.project.name}.${pac.typ}" basedir="${bui.src.dir}"
+			encoding="${src.enc}" level="9" manifest="${bui.src.dir}/META-INF/MANIFEST.MF"
+			index="true" indexMetaInf="true" />
+	</target>
 
-    <target name="pack" description="--> empacota o codigo" depends="jar" />
+	<target name="pack" description="--> empacota o codigo" depends="jar" />
 
-    <!-- ========== Alvos para bibliotecas ========== -->
-    <target name="resolve" description="--> resolve dependencias">
-        <ivy:retrieve type="jar" pattern="${lib.dir}/[conf]/[artifact].[ext]" log="quiet" sync="ture" />
-    </target>
+	<!-- ========== Alvos para bibliotecas ========== -->
+	<target name="resolve" description="--> resolve dependencias">
+		<ivy:retrieve type="jar" pattern="${lib.dir}/[conf]/[artifact].[ext]"
+			log="quiet" sync="ture" />
+	</target>
 
-    <!-- ========== Alvos para publicar o artefato ========== -->
-    <target name="publish" description="--> publica artefato" depends="pack">
-        <ivy:publish resolver="local" overwrite="true">
-            <artifacts pattern="[artifact].[ext]" />
-        </ivy:publish>
-    </target>
+	<!-- ========== Alvos para publicar o artefato ========== -->
+	<target name="publish" description="--> publica artefato"
+		depends="pack">
+		<ivy:publish resolver="local" overwrite="true">
+			<artifacts pattern="[artifact].[ext]" />
+		</ivy:publish>
+	</target>
 
-    <!-- ========== Alvos de QA ========== -->
-    <dirname property="included.basedir" file="${qa.xml}" />
-    <property file="${included.basedir}/qa.properties" />
-    <include file="${qa.xml}" optional="true" />
+	<!-- ========== Alvos de QA ========== -->
+	<dirname property="included.basedir" file="${qa.xml}" />
+	<property file="${included.basedir}/qa.properties" />
+	<include file="${qa.xml}" optional="true" />
 </project>
 

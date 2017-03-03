@@ -4,10 +4,11 @@
 	xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
 	<info organisation="br.gov.pbh.prodabel" module="HappyEyeballs"
 		status="integration" revision="0.1" branch="main">
-		<license name="GNU Lesser General Public License" url="https://www.gnu.org/licenses/lgpl-3.0.txt"/>
-		<ivyauthor name="Guilherme Namen Pimenta"/>
+		<license name="GNU Lesser General Public License" url="https://www.gnu.org/licenses/lgpl-3.0.txt" />
+		<ivyauthor name="Guilherme Namen Pimenta" />
 		<description homepage="https://github.com/guinamen/Java-Happy-Eyeballs">
-			Implementação do algoritmo descrito na RFC 6555 (https://tools.ietf.org/html/rfc6555).
+			Implementação do algoritmo descrito
+			na RFC 6555 (https://tools.ietf.org/html/rfc6555).
 		</description>
 	</info>
 	<configurations defaultconfmapping="compile->default">
