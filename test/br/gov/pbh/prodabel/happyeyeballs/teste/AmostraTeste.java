@@ -1,5 +1,7 @@
 package br.gov.pbh.prodabel.happyeyeballs.teste;
 
+import br.gov.pbh.prodabel.happyeyeballs.Amostra;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -8,8 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import br.gov.pbh.prodabel.happyeyeballs.Amostra;
 
 public class AmostraTeste {
 
@@ -81,6 +81,7 @@ public class AmostraTeste {
     LOGGER.info(Integer.toString(amostra1.hashCode()).toString());
     LOGGER.info(Integer.toString(amostra1.hashCode()).toString());
   }
+
   @Test
   public void testIquals() {
     Assert.assertFalse(amostra1.equals(null));

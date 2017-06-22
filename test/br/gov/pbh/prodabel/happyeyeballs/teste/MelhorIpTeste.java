@@ -1,16 +1,18 @@
 package br.gov.pbh.prodabel.happyeyeballs.teste;
 
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import br.gov.pbh.prodabel.happyeyeballs.HappyEyeBallsException;
+import br.gov.pbh.prodabel.happyeyeballs.MelhorIp;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 
-import br.gov.pbh.prodabel.happyeyeballs.HappyEyeBallsException;
-import br.gov.pbh.prodabel.happyeyeballs.MelhorIp;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 
 public class MelhorIpTeste {
 

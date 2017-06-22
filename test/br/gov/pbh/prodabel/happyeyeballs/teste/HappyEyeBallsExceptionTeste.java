@@ -1,15 +1,14 @@
 package br.gov.pbh.prodabel.happyeyeballs.teste;
 
+import br.gov.pbh.prodabel.happyeyeballs.HappyEyeBallsException;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import br.gov.pbh.prodabel.happyeyeballs.HappyEyeBallsException;
 
 public class HappyEyeBallsExceptionTeste {
 
   @Before
-  public void setUp() throws Exception {
-  }
+  public void setUp() throws Exception {}
 
   @Test
   public void testHappyEyeBallsExceptionStringThrowable() {
@@ -19,8 +18,8 @@ public class HappyEyeBallsExceptionTeste {
 
   @Test
   public void testHappyEyeBallsExceptionString() {
-    final HappyEyeBallsException teste = new HappyEyeBallsException("teste",
-        new Throwable("teste"));
+    final HappyEyeBallsException teste =
+        new HappyEyeBallsException("teste", new Throwable("teste"));
     teste.toString();
   }
 
