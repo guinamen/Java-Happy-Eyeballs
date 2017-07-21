@@ -58,8 +58,8 @@ public final class HappyEyeballs {
   /**
    * Construtor privado para garantir única instancia da classe.
    * 
-   * @param TEMPO_EXPIRACAO Tempo de expiração da resolução de nome.
-   * @param TEMPO_TIMEOUT Tempo de time out de conexão.
+   * @param coneccaoExpiracao Tempo de expiração da resolução de nome.
+   * @param cache Cache para armazenar resultados.
    * @param numThread Número de threads do pool de threads.
    */
   private HappyEyeballs(final long coneccaoExpiracao, final int numThread,
@@ -67,7 +67,7 @@ public final class HappyEyeballs {
     super();
     this.coneccaoExpiracao = coneccaoExpiracao;
     this.cache = cache;
-    this.executor = Executors.newFixedThreadPool(numThread);
+    executor = Executors.newFixedThreadPool(numThread);
   }
 
   /**
@@ -168,6 +168,7 @@ public final class HappyEyeballs {
    * @param enderecosIp Lista de endereços IP
    * @param porta porta do serviço
    * @return tarefa ser executada ou nulo caso não consiga
+   * @throws HappyEyeBallsException caso ocorra algum problema. 
    */
   private Future<Amostra> criaAtividade(final List<? extends InetAddress> enderecosIp,
       final int porta) throws HappyEyeBallsException {
@@ -184,6 +185,7 @@ public final class HappyEyeballs {
    * 
    * @param tarefa tarefa para buscar o tempo de execução
    * @return amostra do tempo de conecção
+   * @throws HappyEyeBallsException caso ocorra algum problema.
    */
   private Amostra executarTarefa(final Future<Amostra> tarefa) throws HappyEyeBallsException {
     try {

@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * Tarefa para coletar os IPs que conectaram no menor tempo.
  * 
  * @author guilherme
- *
+ * @version 0.1
  */
 public class MelhorIp implements Callable<Amostra> {
 
@@ -68,8 +68,8 @@ public class MelhorIp implements Callable<Amostra> {
       throw new HappyEyeBallsException("A porta de conexão deve ser válida.");
     }
     this.tempoTimeOut = tempoTimeOut;
-    this.enderecosIp = enderecosIpV;
     this.porta = porta;
+    enderecosIp = enderecosIpV;
   }
 
   /**
@@ -79,16 +79,19 @@ public class MelhorIp implements Callable<Amostra> {
    */
   private void fechaConexoes() throws HappyEyeBallsException {
     try {
-      for (final SocketChannel canal : canais) {
-        if (canal.isConnected()) {
-          canal.finishConnect();
+      try {
+        for (final SocketChannel canal : canais) {
+          if (canal.isConnected()) {
+            canal.finishConnect();
+          }
+          if (canal.isOpen()) {
+            canal.close();
+          }
         }
-        if (canal.isOpen()) {
-          canal.close();
-        }
+      } finally {
+        selector.close();
+        canais.clear();
       }
-      selector.close();
-      canais.clear();
     } catch (IOException excep) {
       throw new HappyEyeBallsException("Erro ao fechar os canais", excep);
     }
@@ -152,7 +155,7 @@ public class MelhorIp implements Callable<Amostra> {
    * Busca o melhor IP.
    * 
    * @return Tupla IP e tempo para conexão.
-   * @throws IOException Exceção caso ocorra algum problema.
+   * @throws HappyEyeBallsException caso ocorra algum problema.
    */
   private Amostra melhorIp() throws HappyEyeBallsException {
     try {
@@ -166,7 +169,8 @@ public class MelhorIp implements Callable<Amostra> {
   /**
    * Executa a tarefa de buscar o melhor Ip.
    * 
-   * @return o ip com o menor tempo de conecção ou nulo caso a lista esteja vazia
+   * @return o ip com o menor tempo de conecção ou nulo caso a lista esteja vazia.
+   * @throws HappyEyeBallsException caso ocorra algum problema.
    */
   @Override
   public Amostra call() throws HappyEyeBallsException {

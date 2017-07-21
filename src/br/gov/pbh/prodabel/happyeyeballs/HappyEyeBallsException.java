@@ -4,7 +4,7 @@ package br.gov.pbh.prodabel.happyeyeballs;
  * Exceção para as atividades do algoritmo Happy Eye Balls.
  * 
  * @author guilherme
- *
+ * @version 0.1
  */
 public class HappyEyeBallsException extends Exception {
 

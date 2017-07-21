@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package br.gov.pbh.prodabel.happyeyeballs;
 
 import java.io.Serializable;
@@ -8,7 +11,7 @@ import java.util.Arrays;
  * Amostra de tempo de conecção.
  * 
  * @author guilherme
- *
+ * @version 0.1
  */
 public class Amostra implements Comparable<Amostra>, Serializable {
 
@@ -111,7 +114,12 @@ public class Amostra implements Comparable<Amostra>, Serializable {
    */
   @Override
   public String toString() {
-    return "Amostra [enderecoIp=" + enderecoIp + ", " + getTempoTotal() + "]";
+    final StringBuffer buffer = new StringBuffer("Amostra [enderecoIp=");
+    buffer.append(enderecoIp);
+    buffer.append(", ");
+    buffer.append(getTempoTotal());
+    buffer.append("]");
+    return buffer.substring(0);
   }
 
   /**
