@@ -1,6 +1,3 @@
-/*
- * 
- */
 package br.gov.pbh.prodabel.happyeyeballs;
 
 import java.io.Serializable;
