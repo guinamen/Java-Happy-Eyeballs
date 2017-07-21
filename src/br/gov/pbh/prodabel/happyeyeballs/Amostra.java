@@ -38,10 +38,8 @@ public class Amostra implements Comparable<Amostra>, Serializable {
   /**
    * Construtor.
    * 
-   * @param enderecoIp
-   *          endereço ip
-   * @param tempoInicio
-   *          tempo em milisegundos do início para conectar.
+   * @param enderecoIp endereço ip
+   * @param tempoInicio tempo em milisegundos do início para conectar.
    */
   public Amostra(final InetAddress enderecoIp, final long tempoInicio) {
     super();
@@ -70,8 +68,7 @@ public class Amostra implements Comparable<Amostra>, Serializable {
   /**
    * Define o tempo em que a conecção terminou.
    * 
-   * @param tempoFim
-   *          tempo em milisegundos
+   * @param tempoFim tempo em milisegundos
    */
   public void setTempoFim(final long tempoFim) {
     this.tempoFim = tempoFim;
@@ -98,8 +95,7 @@ public class Amostra implements Comparable<Amostra>, Serializable {
   /**
    * Compara duas amostras.
    * 
-   * @param outro
-   *          a amostra para ser comparada
+   * @param outro a amostra para ser comparada
    * @return número negativo, zero, ou positivo caso seja menor, igual, ou maior
    */
   @Override
@@ -114,11 +110,8 @@ public class Amostra implements Comparable<Amostra>, Serializable {
    */
   @Override
   public String toString() {
-    final StringBuffer buffer = new StringBuffer("Amostra [enderecoIp=");
-    buffer.append(enderecoIp);
-    buffer.append(", ");
-    buffer.append(getTempoTotal());
-    buffer.append("]");
+    final StringBuffer buffer = new StringBuffer("Amostra [enderecoIp=").append(enderecoIp)
+        .append(", ").append(getTempoTotal()).append("]");
     return buffer.substring(0);
   }
 
@@ -129,14 +122,13 @@ public class Amostra implements Comparable<Amostra>, Serializable {
    */
   @Override
   public int hashCode() {
-    return Arrays.hashCode(new Object[] { super.hashCode(), enderecoIp, tempoFim, tempoInicio });
+    return Arrays.hashCode(new Object[] {super.hashCode(), enderecoIp, tempoFim, tempoInicio});
   }
 
   /**
    * Verfica se esse objeto é igual ao parâmetro.
    * 
-   * @param objeto
-   *          outro objeto
+   * @param objeto outro objeto
    * @return verdadeiro caso os objetos sejam iguais.
    */
   @Override
