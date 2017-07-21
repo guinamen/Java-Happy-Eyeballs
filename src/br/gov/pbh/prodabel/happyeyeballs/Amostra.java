@@ -130,19 +130,15 @@ public class Amostra implements Comparable<Amostra>, Serializable {
    */
   @Override
   public boolean equals(final Object objeto) {
-    final boolean igual;
+    boolean igual = false;
     if (this == objeto) {
       igual = true;
-    } else if (objeto instanceof Amostra) {
+    } else if (objeto != null && getClass() == objeto.getClass()) {
       final Amostra outro = (Amostra) objeto;
-      if (enderecoIp == null) {
-        igual = false;
-      } else {
+      if (enderecoIp != null) {
         igual = enderecoIp.equals(outro.enderecoIp) && tempoInicio == outro.tempoInicio
             && tempoFim == outro.tempoFim;
       }
-    } else {
-      igual = false;
     }
     return igual;
   }
