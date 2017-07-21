@@ -48,12 +48,12 @@ public final class HappyEyeballs {
   /**
    * Tempo de expiração da conecção.
    */
-  private final transient long coneccaoExpiracao;
+  private final long coneccaoExpiracao;
 
   /**
    * Pool de threads para paralelizar a resolução de nomes.
    */
-  private final transient ExecutorService executor;
+  private final ExecutorService executor;
 
   /**
    * Construtor privado para garantir única instancia da classe.
@@ -136,7 +136,7 @@ public final class HappyEyeballs {
    * @throws HappyEyeBallsException Caso ocorra alguma exceção.
    */
   public InetAddress obterIp(final String nomeRede, final int porta) throws HappyEyeBallsException {
-    final String nome = new StringBuffer(nomeRede).append(":").append(porta).toString();
+    final String nome = new StringBuffer(nomeRede).append(':').append(porta).toString();
     final InetAddress enderecoIp;
     if (cache.containsKey(nome)) {
       enderecoIp = cache.get(nome);

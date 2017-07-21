@@ -31,24 +31,24 @@ public class MelhorIp implements Callable<Amostra> {
   /**
    * Tempo de expiração da atividade.
    */
-  private final transient long tempoTimeOut;
+  private final long tempoTimeOut;
   /**
    * Lista de IPs.
    */
-  private final transient List<? extends InetAddress> enderecosIp;
+  private final List<? extends InetAddress> enderecosIp;
   /**
    * Porta para teste de conectividade.
    */
-  private final transient int porta;
+  private final int porta;
 
   /**
    * Lista de conexões assíncronas.
    */
-  private transient List<SocketChannel> canais;
+  private List<SocketChannel> canais;
   /**
    * Gerenciador de conexões assíncronas.
    */
-  private transient Selector selector;
+  private Selector selector;
 
   /**
    * Construtor simples.
