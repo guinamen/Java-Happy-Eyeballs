@@ -9,9 +9,16 @@
 	</tstamp>
 
 	<!-- ========== Classpaht ========== -->
-	<path id="lib">
-		<fileset dir="${lib.dir}" includes="**/*.jar" />
+	<path id="lib-compile">
+		<fileset dir="${lib.dir}/compile" includes="**/*.jar" />
 	</path>
+	<path id="lib-runtime">
+		<fileset dir="${lib.dir}/runtime" includes="**/*.jar" />
+	</path>
+	<path id="lib-test">
+		<fileset dir="${lib.dir}/test" includes="**/*.jar" />
+	</path>
+
 	<path id="src" location="${bui.src.dir}" />
 	<path id="tst" location="${bui.tst.dir}" />
 
@@ -53,7 +60,7 @@
 		</manifest>
 		<javac srcdir="${src.dir}" includes="**" encoding="${src.enc}"
 			fork="on" includeAntRuntime="no" destdir="${bui.src.dir}" nowarn="false"
-			debug="true" debuglevel="lines,vars,source" classpathref="lib" />
+			debug="true" debuglevel="lines,vars,source" classpathref="lib-compile" />
 		<copy todir="${bui.src.dir}">
 			<fileset dir="${src.dir}" excludes="**/*.java" />
 		</copy>
@@ -67,7 +74,7 @@
 		<mkdir dir="${bui.tst.dir}" />
 		<javac srcdir="${test.dir}" includes="**" encoding="${src.enc}"
 			fork="on" includeAntRuntime="no" destdir="${bui.tst.dir}" nowarn="false"
-			debug="true" debuglevel="lines,vars,source" classpathref="lib">
+			debug="true" debuglevel="lines,vars,source" classpathref="lib-test">
 			<classpath refid="src" />
 		</javac>
 		<copy todir="${bui.tst.dir}">
@@ -79,9 +86,9 @@
 	<target name="test" depends="javac.test" description="--> executa todos os testes"
 		if="${test}">
 		<mkdir dir="${test.junit.dir}" />
-		<junit printsummary="yes" haltonerror="true" haltonfailure="true"
+		<junit printsummary="yes" haltonerror="false" haltonfailure="false"
 			fork="true" dir="${test.junit.dir}">
-			<classpath refid="lib" />
+			<classpath refid="lib-test" />
 			<classpath refid="src" />
 			<classpath refid="tst" />
 			<jvmarg value="${test.jvmarg}" />

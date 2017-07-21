@@ -13,8 +13,8 @@
 	</info>
 	<configurations defaultconfmapping="compile->default">
 		<conf name="compile" description="Required to compile application" />
-		<conf name="runtime" description="Additional run-time dependencies" />
-		<conf name="test" description="Required for test only" />
+		<conf name="runtime" description="Additional run-time dependencies" extends="compile"/>
+		<conf name="test" description="Required for test only"  extends="compile,runtime" />
 	</configurations>
 	<dependencies>
 		<dependency org="org.slf4j" name="slf4j-api" rev="1.7.21"
@@ -23,7 +23,6 @@
 			conf="compile->default" />
 		<dependency org="org.slf4j" name="slf4j-jdk14" rev="1.7.21"
 			conf="runtime->default">
-			<exclude module="slf4j-api" />
 		</dependency>
 		<dependency org="junit" name="junit" rev="4.12" conf="test->default" />
 	</dependencies>
