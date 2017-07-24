@@ -133,7 +133,7 @@ public class Amostra implements Comparable<Amostra>, Serializable {
     boolean igual = false;
     if (this == objeto) {
       igual = true;
-    } else if (objeto != null && getClass() == objeto.getClass()) {
+    } else if (objeto != null && getClass().equals(objeto.getClass())) {
       final Amostra outro = (Amostra) objeto;
       if (enderecoIp != null) {
         igual = enderecoIp.equals(outro.enderecoIp) && tempoInicio == outro.tempoInicio
