@@ -23,102 +23,101 @@ interface Mensagens {
   ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, Locale.getDefault());
 
   /**
-   * Mensagem.
+   * Mensagem 0.
    */
   String HAPPYEYEBALLS_0 = Mensagens.getString("HappyEyeballs.0");
   /**
-   * Mensagem.
+   * Mensagem 1.
    */
   String HAPPYEYEBALLS_1 = Mensagens.getString("HappyEyeballs.1");
   /**
-   * Mensagem.
+   * Mensagem 2.
    */
   String HAPPYEYEBALLS_2 = Mensagens.getString("HappyEyeballs.2");
   /**
-   * Mensagem.
+   * Mensagem 3.
    */
   String HAPPYEYEBALLS_3 = Mensagens.getString("HappyEyeballs.3");
   /**
-   * Mensagem.
+   * Mensagem 4.
    */
   String HAPPYEYEBALLS_4 = Mensagens.getString("HappyEyeballs.4");
   /**
-   * Mensagem.
+   * Mensagem 5.
    */
   String HAPPYEYEBALLS_5 = Mensagens.getString("HappyEyeballs.5");
   /**
-   * Mensagem.
+   * Mensagem 6.
    */
   String HAPPYEYEBALLS_6 = Mensagens.getString("HappyEyeballs.6");
   /**
-   * Mensagem.
+   * Mensagem 7.
    */
   String HAPPYEYEBALLS_7 = Mensagens.getString("HappyEyeballs.7");
   /**
-   * Mensagem.
+   * Mensagem 8.
    */
   String HAPPYEYEBALLS_8 = Mensagens.getString("HappyEyeballs.8");
   /**
-   * Mensagem.
+   * Mensagem 9.
    */
   String HAPPYEYEBALLS_9 = Mensagens.getString("HappyEyeballs.9");
   /**
-   * Mensagem.
+   * Mensagem 10.
    */
   String HAPPYEYEBALLS_10 = Mensagens.getString("HappyEyeballs.10");
   /**
-   * Mensagem.
+   * Mensagem 11.
    */
   String HAPPYEYEBALLS_11 = Mensagens.getString("HappyEyeballs.11");
   /**
-   * Mensagem.
+   * Mensagem 12.
    */
   String HAPPYEYEBALLS_12 = Mensagens.getString("HappyEyeballs.12");
   /**
-   * Mensagem.
+   * Mensagem 13.
    */
   String HAPPYEYEBALLS_13 = Mensagens.getString("HappyEyeballs.13");
   /**
-   * Mensagem.
+   * Mensagem 14.
    */
   String HAPPYEYEBALLS_14 = Mensagens.getString("HappyEyeballs.14");
   /**
-   * Mensagem.
+   * Mensagem 15.
    */
   String HAPPYEYEBALLS_15 = Mensagens.getString("HappyEyeballs.15");
   /**
-   * Mensagem.
+   * Mensagem 16.
    */
   String HAPPYEYEBALLS_16 = Mensagens.getString("HappyEyeballs.16");
   /**
-   * Mensagem.
+   * Mensagem 17.
    */
   String HAPPYEYEBALLS_17 = Mensagens.getString("HappyEyeballs.17");
   /**
-   * Mensagem.
+   * Mensagem 18.
    */
   String HAPPYEYEBALLS_18 = Mensagens.getString("HappyEyeballs.18");
   /**
-   * Mensagem.
+   * Mensagem 19.
    */
   String HAPPYEYEBALLS_19 = Mensagens.getString("HappyEyeballs.19");
   /**
-   * Mensagem.
+   * Mensagem 20.
    */
   String HAPPYEYEBALLS_20 = Mensagens.getString("HappyEyeballs.20");
   /**
-   * Mensagem.
+   * Mensagem 21.
    */
   String HAPPYEYEBALLS_21 = Mensagens.getString("HappyEyeballs.21");
   /**
-   * Mensagem.
+   * Mensagem 22.
    */
   String HAPPYEYEBALLS_22 = Mensagens.getString("HappyEyeballs.22");
   /**
-   * Mensagem.
+   * Mensagem 23.
    */
   String HAPPYEYEBALLS_23 = Mensagens.getString("HappyEyeballs.23");
-
 
   /**
    * Obtem a string para a Mensagem. a partir de uma chave.
