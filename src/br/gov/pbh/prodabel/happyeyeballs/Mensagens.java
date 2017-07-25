@@ -1,7 +1,6 @@
 package br.gov.pbh.prodabel.happyeyeballs;
 
 import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 /**
@@ -50,11 +49,7 @@ interface Mensagens {
    * @return mensagem
    */
   public static String getString(String chave) {
-    try {
-      return RESOURCE_BUNDLE.getString(chave);
-    } catch (MissingResourceException exceptioin) {
-      return '!' + chave + '!';
-    }
+    return RESOURCE_BUNDLE.getString(chave);
   }
 
 }
