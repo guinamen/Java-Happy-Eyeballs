@@ -20,8 +20,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-
-
 /**
  * Happy EyeBalls em Java. Algoritmo RFC 6555.
  * 
@@ -170,7 +168,7 @@ public final class HappyEyeballs {
    * @param enderecosIp Lista de endereços IP
    * @param porta porta do serviço
    * @return tarefa ser executada ou nulo caso não consiga
-   * @throws HappyEyeBallsException caso ocorra algum problema. 
+   * @throws HappyEyeBallsException caso ocorra algum problema.
    */
   private Future<Amostra> criaAtividade(final List<? extends InetAddress> enderecosIp,
       final int porta) throws HappyEyeBallsException {

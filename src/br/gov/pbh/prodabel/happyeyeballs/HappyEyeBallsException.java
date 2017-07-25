@@ -16,10 +16,8 @@ public class HappyEyeBallsException extends Exception {
   /**
    * Cria uma exceção com uma mensagem e a causa.
    * 
-   * @param mensagem
-   *          mensagem
-   * @param causa
-   *          causa
+   * @param mensagem mensagem
+   * @param causa causa
    */
   public HappyEyeBallsException(final String mensagem, final Throwable causa) {
     super(mensagem, causa);
@@ -28,8 +26,7 @@ public class HappyEyeBallsException extends Exception {
   /**
    * Cria uma exceção com uma mensagem.
    * 
-   * @param mensagem
-   *          mensagem
+   * @param mensagem mensagem
    */
   public HappyEyeBallsException(final String mensagem) {
     super(mensagem);
