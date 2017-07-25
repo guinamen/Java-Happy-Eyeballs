@@ -18,7 +18,7 @@ public class HappyEyeBallsTeste {
 
   @Before
   public void setUp() throws Exception {
-    singleton = HappyEyeballs.getDefaultHappyEyeballs();
+    singleton = HappyEyeballs.getHappyEyeballsPadrao();
   }
 
   @Test

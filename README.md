@@ -7,7 +7,7 @@ Para maiores informações consulte a [RFC 6555](https://tools.ietf.org/html/rfc
 ## Como utilizar
 Recupere o objeto único:  
 
-`HappyEyeballs singleton = HappyEyeballs.getSingleHappyEyeballs();`
+`HappyEyeballs singleton = HappyEyeballs.getHappyEyeballsPadrao();`
 
 Informe o nome do serviço e a porta de conecção:  
 

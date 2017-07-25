@@ -19,12 +19,13 @@ public interface HappyEyeballs {
    * 
    * @return a implementação do algoritmo Happy EyeBalls padrão.
    */
-  static HappyEyeballs getDefaultHappyEyeballs() {
+  static HappyEyeballs getHappyEyeballsPadrao() {
     return HappyEyeballsImpl.getSingleHappyEyeballs();
   }
 
   /**
    * Termina o pool de threads que executa as consultas de conexão.
+   * Executar esse comando no final da execução da sua aplicação.
    */
   static void terminarPoolThread() {
     HappyEyeballsImpl.terminarPoolThread();

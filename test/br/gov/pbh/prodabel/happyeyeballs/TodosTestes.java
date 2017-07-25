@@ -17,7 +17,7 @@ public class TodosTestes {
 
   @BeforeClass
   public static void setUp() {
-    HappyEyeballs.getDefaultHappyEyeballs();
+    HappyEyeballs.getHappyEyeballsPadrao();
   }
 
   @AfterClass
