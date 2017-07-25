@@ -37,37 +37,41 @@ public final class HappyEyeballs {
    * Semáforo para bloquear as threads para cálculo de tempo de expiração.
    */
   private static final Object MUTEX = new Object();
-  /**
-   * Instância única do objeto (Singleton).
-   */
-  private static HappyEyeballs single;
+
   /**
    * Cache para armazenar as resoluções dos nomes.
    */
-  private final Cache<String, InetAddress> cache;
+  private static final Cache<String, InetAddress> CACHE;
   /**
    * Tempo de expiração da conecção.
    */
-  private final long coneccaoExpiracao;
+  private static final long TEMPO_EXPIRACAO;
 
   /**
    * Pool de threads para paralelizar a resolução de nomes.
    */
-  private final ExecutorService executor;
+  private static final ExecutorService EXECUTOR;
 
   /**
-   * Construtor privado para garantir única instancia da classe.
-   * 
-   * @param coneccaoExpiracao Tempo de expiração da resolução de nome.
-   * @param cache Cache para armazenar resultados.
-   * @param numThread Número de threads do pool de threads.
+   * Instância única do objeto (Singleton).
    */
-  private HappyEyeballs(final long coneccaoExpiracao, final int numThread,
-      final Cache<String, InetAddress> cache) {
-    super();
-    this.coneccaoExpiracao = coneccaoExpiracao;
-    this.cache = cache;
-    executor = Executors.newFixedThreadPool(numThread);
+  private static HappyEyeballs single;
+
+  /**
+   * Construtor estático utilizado para inicializar as variáveis do algoritmo.
+   */
+  static {
+    synchronized (MUTEX) {
+      final URL myUrl = ClassLoader.class.getResource("/cache.xml");
+      final Configuration xmlConfig = new XmlConfiguration(myUrl);
+      final CacheManager cacheManager = CacheManagerBuilder.newCacheManager(xmlConfig);
+      cacheManager.init();
+      CACHE = cacheManager.getCache("happyeyeballs", String.class, InetAddress.class);
+      // TODO Forma melhor de fornecer os parâmetros de configuração do
+      // algoritmo.
+      EXECUTOR = Executors.newFixedThreadPool(4);
+      TEMPO_EXPIRACAO = 300L;
+    }
   }
 
   /**
@@ -76,16 +80,9 @@ public final class HappyEyeballs {
    * @return Única instância da classe.
    */
   public static HappyEyeballs getSingleHappyEyeballs() {
-    // TODO Forma melhor de fornecer os parâmetros de configuração do
-    // algoritmo.
     synchronized (MUTEX) {
       if (single == null) {
-        final URL myUrl = ClassLoader.class.getResource("/cache.xml");
-        final Configuration xmlConfig = new XmlConfiguration(myUrl);
-        final CacheManager cacheManager = CacheManagerBuilder.newCacheManager(xmlConfig);
-        cacheManager.init();
-        single = new HappyEyeballs(300L, 4,
-            cacheManager.getCache("happyeyeballs", String.class, InetAddress.class));
+        single = new HappyEyeballs();
       }
     }
     return single;
@@ -94,12 +91,12 @@ public final class HappyEyeballs {
   /**
    * Finaliza o pool de threads e limpa o cache. Executar ao finalizar o programa.
    */
-  public void terminarPoolThread() {
-    executor.shutdown();
+  public static void terminarPoolThread() {
     synchronized (MUTEX) {
+      EXECUTOR.shutdown();
       single = null;
+      CACHE.clear();
     }
-    cache.clear();
   }
 
   /**
@@ -138,8 +135,8 @@ public final class HappyEyeballs {
   public InetAddress obterIp(final String nomeRede, final int porta) throws HappyEyeBallsException {
     final String nome = new StringBuffer(nomeRede).append(':').append(porta).toString();
     final InetAddress enderecoIp;
-    if (cache.containsKey(nome)) {
-      enderecoIp = cache.get(nome);
+    if (CACHE.containsKey(nome)) {
+      enderecoIp = CACHE.get(nome);
       LOGGER.debug("Menor tempo de conecçao no cache -> {}:{} {}", nomeRede, porta, enderecoIp);
     } else {
       // Busca todos os ips
@@ -156,7 +153,7 @@ public final class HappyEyeballs {
       } else {
         enderecoIp = amostra.getEnderecoIp();
         LOGGER.debug("Menor tempo de conecçao -> {}:{} {}", nomeRede, porta, enderecoIp);
-        cache.put(nome, enderecoIp);
+        CACHE.put(nome, enderecoIp);
       }
     }
     return enderecoIp;
@@ -175,8 +172,8 @@ public final class HappyEyeballs {
     if (enderecosIp == null || enderecosIp.isEmpty()) {
       throw new IllegalArgumentException("Lista de endereço inválida.");
     } else {
-      final MelhorIp melhorIp = new MelhorIp(coneccaoExpiracao, enderecosIp, porta);
-      return executor.submit(melhorIp);
+      final MelhorIp melhorIp = new MelhorIp(TEMPO_EXPIRACAO, enderecosIp, porta);
+      return EXECUTOR.submit(melhorIp);
     }
   }
 
