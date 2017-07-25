@@ -11,7 +11,7 @@ import java.util.ResourceBundle;
  * @version 1.0
  *
  */
-public interface Mensagens {
+interface Mensagens {
 
   public static final String BUNDLE_NAME = "br.gov.pbh.prodabel.happyeyeballs.mensagens";
 
