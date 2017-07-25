@@ -5,17 +5,17 @@ import java.net.InetAddress;
 public interface HappyEyeballs {
 
   /**
-   * Obtem o melhor ip para conecção.
+   * Obtém o melhor IP para conexão.
    * 
    * @param nomeRede nome do servidor
    * @param porta porta do servidor
-   * @return o melhor ip para conexão
+   * @return o melhor IP para conexão
    * @throws HappyEyeBallsException caso ocorra algum problema.
    */
   InetAddress obterIp(final String nomeRede, final int porta) throws HappyEyeBallsException;
 
   /**
-   * Obtem e retorna a implementação do algoritmo Happy EyeBalls padrão.
+   * Obtém e retorna a implementação do algoritmo Happy EyeBalls padrão.
    * 
    * @return a implementação do algoritmo Happy EyeBalls padrão.
    */
@@ -24,8 +24,8 @@ public interface HappyEyeballs {
   }
 
   /**
-   * Termina o pool de threads que executa as consultas de conexão.
-   * Executar esse comando no final da execução da sua aplicação.
+   * Termina o pool de threads que executa as consultas de conexão. Executar esse comando no final
+   * da execução da sua aplicação.
    */
   static void terminarPoolThread() {
     HappyEyeballsImpl.terminarPoolThread();

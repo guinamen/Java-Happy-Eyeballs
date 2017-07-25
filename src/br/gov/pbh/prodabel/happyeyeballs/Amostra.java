@@ -5,9 +5,9 @@ import java.net.InetAddress;
 import java.util.Arrays;
 
 /**
- * Amostra de tempo de conecção.
+ * Amostra de tempo de conexão.
  * 
- * @author guilherme
+ * @author Guilherme
  * @version 0.1
  */
 class Amostra implements Comparable<Amostra>, Serializable {
@@ -18,25 +18,25 @@ class Amostra implements Comparable<Amostra>, Serializable {
   private static final long serialVersionUID = 1130348813518387677L;
 
   /**
-   * Endereço Ip.
+   * Endereço IP.
    */
   private final InetAddress enderecoIp;
 
   /**
-   * Tempo para conectar ao endereço em milisegundos.
+   * Tempo para conectar ao endereço em milissegundos.
    */
   private final long tempoInicio;
 
   /**
-   * Tempo em que terminou a conecção.
+   * Tempo em que terminou a conexão.
    */
   private long tempoFim;
 
   /**
    * Construtor.
    * 
-   * @param enderecoIp endereço ip
-   * @param tempoInicio tempo em milisegundos do início para conectar.
+   * @param enderecoIp endereço IP
+   * @param tempoInicio tempo em milissegundos do inicio para conectar.
    */
   public Amostra(final InetAddress enderecoIp, final long tempoInicio) {
     super();
@@ -45,36 +45,36 @@ class Amostra implements Comparable<Amostra>, Serializable {
   }
 
   /**
-   * Ip da amostra.
+   * IP da amostra.
    * 
-   * @return endereço ip da amaostra
+   * @return endereço IP da amostra
    */
   public InetAddress getEnderecoIp() {
     return enderecoIp;
   }
 
   /**
-   * Retorna o tempo em que a conecção terminou.
+   * Retorna o tempo em que a conexão terminou.
    * 
-   * @return tempo em milisegundos
+   * @return tempo em milissegundos
    */
   public long getTempoFim() {
     return tempoFim;
   }
 
   /**
-   * Define o tempo em que a conecção terminou.
+   * Define o tempo em que a conexão terminou.
    * 
-   * @param tempoFim tempo em milisegundos
+   * @param tempoFim tempo em milissegundos
    */
   public void setTempoFim(final long tempoFim) {
     this.tempoFim = tempoFim;
   }
 
   /**
-   * Tempo de conecção.
+   * Tempo de conexão.
    * 
-   * @return tempo para se conectar ao endereço em milisegundos.
+   * @return tempo para se conectar ao endereço em milissegundos.
    */
   public long getTempoInicio() {
     return tempoInicio;
@@ -83,7 +83,7 @@ class Amostra implements Comparable<Amostra>, Serializable {
   /**
    * Retorna o tempo total para conectar ao servidor.
    * 
-   * @return tempo em milisegundos
+   * @return tempo em milissegundos
    */
   public long getTempoTotal() {
     return tempoFim == 0 ? Long.MAX_VALUE : tempoFim - tempoInicio;
@@ -124,7 +124,7 @@ class Amostra implements Comparable<Amostra>, Serializable {
   }
 
   /**
-   * Verfica se esse objeto é igual ao parâmetro.
+   * Verifica se esse objeto é igual ao parâmetro.
    * 
    * @param objeto outro objeto
    * @return verdadeiro caso os objetos sejam iguais.

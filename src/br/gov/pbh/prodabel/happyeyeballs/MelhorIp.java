@@ -19,7 +19,7 @@ import java.util.concurrent.Callable;
 /**
  * Tarefa para coletar os IPs que conectaram no menor tempo.
  * 
- * @author guilherme
+ * @author Guilherme
  * @version 0.1
  */
 class MelhorIp implements Callable<Amostra> {
@@ -98,7 +98,7 @@ class MelhorIp implements Callable<Amostra> {
   }
 
   /**
-   * Inicializa os canais para conecções asincronas.
+   * Inicializa os canais para conexões assíncronas.
    * 
    * @throws HappyEyeBallsException caso ocorra algum erro
    */
@@ -122,10 +122,10 @@ class MelhorIp implements Callable<Amostra> {
   }
 
   /**
-   * Verifica as conecções e retorna o melhor Ip.
+   * Verifica as conexões e retorna o melhor IP.
    * 
-   * @return Amostra com melhor tempo de conecção
-   * @throws HappyEyeBallsException caso o tempo de conecção tenha expirado
+   * @return Amostra com melhor tempo de conexão
+   * @throws HappyEyeBallsException caso o tempo de conexão tenha expirado
    */
   private Amostra checaCanais() throws HappyEyeBallsException {
     final SortedSet<Amostra> amostras = new TreeSet<Amostra>();
@@ -147,7 +147,7 @@ class MelhorIp implements Callable<Amostra> {
       amostras.clear();
       return ret;
     } catch (IOException excep) {
-      throw new HappyEyeBallsException(Mensagens.HAPPYEYEBALLS_23, excep); //$NON-NLS-1$
+      throw new HappyEyeBallsException(Mensagens.HAPPYEYEBALLS_23, excep); // $NON-NLS-1$
     }
   }
 
@@ -167,9 +167,9 @@ class MelhorIp implements Callable<Amostra> {
   }
 
   /**
-   * Executa a tarefa de buscar o melhor Ip.
+   * Executa a tarefa de buscar o melhor IP.
    * 
-   * @return o ip com o menor tempo de conecção ou nulo caso a lista esteja vazia.
+   * @return o IP com o menor tempo de conexão ou nulo caso a lista esteja vazia.
    * @throws HappyEyeBallsException caso ocorra algum problema.
    */
   @Override

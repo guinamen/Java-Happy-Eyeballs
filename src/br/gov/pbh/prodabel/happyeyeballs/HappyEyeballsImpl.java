@@ -43,7 +43,7 @@ final class HappyEyeballsImpl implements HappyEyeballs {
    */
   private static final Cache<String, InetAddress> CACHE;
   /**
-   * Tempo de expiração da conecção.
+   * Tempo de expiração da conexão.
    */
   private static final long TEMPO_EXPIRACAO;
 
@@ -102,8 +102,8 @@ final class HappyEyeballsImpl implements HappyEyeballs {
    * Obtem todos os ip de um nome.
    * 
    * @param nome nome do servidor
-   * @param enderecosIpV4 lista para adicionar os endereçõs IPv4
-   * @param enderecosIpV6 lista para adicionar os endereçõs IPv6
+   * @param enderecosIpV4 lista para adicionar os endereços IPv4
+   * @param enderecosIpV6 lista para adicionar os endereços IPv6
    * @throws HappyEyeBallsException caso não encontre o servidor.
    */
   private void obtemIpsPeloNome(final String nome, final List<Inet4Address> enderecosIpV4,
@@ -124,11 +124,11 @@ final class HappyEyeballsImpl implements HappyEyeballs {
   }
 
   /**
-   * Obtem o ip segundo o algoritmo Happy Eyeballs.
+   * Obtém o IP segundo o algoritmo Happy Eyeballs.
    * 
    * @param nomeRede Nome do servidor a ser resolvido.
    * @param porta Porta para teste de conexão.
-   * @return O ip resolvido ou null caso ocorra algum problema.
+   * @return O IP resolvido ou null caso ocorra algum problema.
    * @throws HappyEyeBallsException Caso ocorra alguma exceção.
    */
   @Override
@@ -160,7 +160,7 @@ final class HappyEyeballsImpl implements HappyEyeballs {
   }
 
   /**
-   * Cria a atividade para buscar os tempo de conecção.
+   * Cria a atividade para buscar os tempo de conexão.
    * 
    * @param enderecosIp Lista de endereços IP
    * @param porta porta do serviço
@@ -181,7 +181,7 @@ final class HappyEyeballsImpl implements HappyEyeballs {
    * Executa a tarefa e retorna a Amosta.
    * 
    * @param tarefa tarefa para buscar o tempo de execução
-   * @return amostra do tempo de conecção
+   * @return amostra do tempo de conexão
    * @throws HappyEyeBallsException caso ocorra algum problema.
    */
   private Amostra executarTarefa(final Future<Amostra> tarefa) throws HappyEyeBallsException {
@@ -199,7 +199,7 @@ final class HappyEyeballsImpl implements HappyEyeballs {
   }
 
   /**
-   * Obtem o melhor IP usando busca em threads e conexão assincrona.
+   * Obtém o melhor IP usando busca em threads e conexão assíncrona.
    * 
    * @param enderecosIpV4 Lista de IPV4
    * @param enderecosIpV6 Lista de IPV6

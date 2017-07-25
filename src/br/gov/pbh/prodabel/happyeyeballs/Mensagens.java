@@ -16,12 +16,10 @@ interface Mensagens {
    * Nome do bundle de mensagens.
    */
   String BUNDLE_NAME = "br.gov.pbh.prodabel.happyeyeballs.mensagens";
-
   /**
    * Resource bundle de mensagens.
    */
   ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, Locale.getDefault());
-
   /**
    * Mensagem 0.
    */
@@ -120,7 +118,7 @@ interface Mensagens {
   String HAPPYEYEBALLS_23 = Mensagens.getString("HappyEyeballs.23");
 
   /**
-   * Obtem a string para a Mensagem. a partir de uma chave.
+   * Obtém a string para a Mensagem. a partir de uma chave.
    * 
    * @param chave chave a ser procurada
    * @return Mensagem.
