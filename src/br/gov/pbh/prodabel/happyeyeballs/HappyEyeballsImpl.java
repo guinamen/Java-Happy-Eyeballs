@@ -26,12 +26,12 @@ import java.util.concurrent.Future;
  * @author guilherme
  * @version 0.1
  */
-public final class HappyEyeballs {
+final class HappyEyeballsImpl implements HappyEyeballs {
 
   /**
    * Classe de log.
    */
-  private static final Logger LOGGER = LoggerFactory.getLogger(HappyEyeballs.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HappyEyeballsImpl.class);
 
   /**
    * Semáforo para bloquear as threads para cálculo de tempo de expiração.
@@ -55,18 +55,18 @@ public final class HappyEyeballs {
   /**
    * Instância única do objeto (Singleton).
    */
-  private static HappyEyeballs single;
+  private static HappyEyeballsImpl single;
 
   /**
    * Construtor estático utilizado para inicializar as variáveis do algoritmo.
    */
   static {
     synchronized (MUTEX) {
-      final URL myUrl = ClassLoader.class.getResource("/cache.xml");
+      final URL myUrl = ClassLoader.class.getResource(Mensagens.HAPPYEYEBALLS_0);
       final Configuration xmlConfig = new XmlConfiguration(myUrl);
       final CacheManager cacheManager = CacheManagerBuilder.newCacheManager(xmlConfig);
       cacheManager.init();
-      CACHE = cacheManager.getCache("happyeyeballs", String.class, InetAddress.class);
+      CACHE = cacheManager.getCache(Mensagens.HAPPYEYEBALLS_1, String.class, InetAddress.class);
       // TODO Forma melhor de fornecer os parâmetros de configuração do
       // algoritmo.
       EXECUTOR = Executors.newFixedThreadPool(4);
@@ -79,10 +79,10 @@ public final class HappyEyeballs {
    * 
    * @return Única instância da classe.
    */
-  public static HappyEyeballs getSingleHappyEyeballs() {
+  static HappyEyeballsImpl getSingleHappyEyeballs() {
     synchronized (MUTEX) {
       if (single == null) {
-        single = new HappyEyeballs();
+        single = new HappyEyeballsImpl();
       }
     }
     return single;
@@ -91,7 +91,7 @@ public final class HappyEyeballs {
   /**
    * Finaliza o pool de threads e limpa o cache. Executar ao finalizar o programa.
    */
-  public static void terminarPoolThread() {
+  static void terminarPoolThread() {
     synchronized (MUTEX) {
       EXECUTOR.shutdown();
       single = null;
@@ -112,7 +112,7 @@ public final class HappyEyeballs {
     // Separa os IPs
     try {
       for (final InetAddress endereco : InetAddress.getAllByName(nome)) {
-        LOGGER.debug("{} -> {}", nome, endereco);
+        LOGGER.debug(Mensagens.HAPPYEYEBALLS_2, nome, endereco);
         if (endereco instanceof Inet4Address) {
           enderecosIpV4.add((Inet4Address) endereco);
         } else {
@@ -120,7 +120,7 @@ public final class HappyEyeballs {
         }
       }
     } catch (UnknownHostException exp) {
-      throw new HappyEyeBallsException("Erro ao buscar nome", exp);
+      throw new HappyEyeBallsException(Mensagens.HAPPYEYEBALLS_3, exp);
     }
   }
 
@@ -132,27 +132,28 @@ public final class HappyEyeballs {
    * @return O ip resolvido ou null caso ocorra algum problema.
    * @throws HappyEyeBallsException Caso ocorra alguma exceção.
    */
+  @Override
   public InetAddress obterIp(final String nomeRede, final int porta) throws HappyEyeBallsException {
     final String nome = new StringBuffer(nomeRede).append(':').append(porta).toString();
     final InetAddress enderecoIp;
     if (CACHE.containsKey(nome)) {
       enderecoIp = CACHE.get(nome);
-      LOGGER.debug("Menor tempo de conecçao no cache -> {}:{} {}", nomeRede, porta, enderecoIp);
+      LOGGER.debug(Mensagens.HAPPYEYEBALLS_4, nomeRede, porta, enderecoIp);
     } else {
       // Busca todos os ips
       final List<Inet4Address> enderecosIpV4 = new LinkedList<Inet4Address>();
       final List<Inet6Address> enderecosIpV6 = new LinkedList<Inet6Address>();
       obtemIpsPeloNome(nomeRede, enderecosIpV4, enderecosIpV6);
-      LOGGER.debug("IPV6 -> {}:{} {}", nomeRede, porta, enderecosIpV6);
-      LOGGER.debug("IPV4 -> {}:{} {}", nomeRede, porta, enderecosIpV4);
+      LOGGER.debug(Mensagens.HAPPYEYEBALLS_5, nomeRede, porta, enderecosIpV6);
+      LOGGER.debug(Mensagens.HAPPYEYEBALLS_6, nomeRede, porta, enderecosIpV4);
       // Busca o melhor tempo de conecção
       final Amostra amostra = obterMelhorIp(enderecosIpV4, enderecosIpV6, porta);
       if (amostra == null) {
         enderecoIp = null;
-        LOGGER.debug("Menor tempo não encontrado");
+        LOGGER.debug(Mensagens.HAPPYEYEBALLS_7);
       } else {
         enderecoIp = amostra.getEnderecoIp();
-        LOGGER.debug("Menor tempo de conecçao -> {}:{} {}", nomeRede, porta, enderecoIp);
+        LOGGER.debug(Mensagens.HAPPYEYEBALLS_8, nomeRede, porta, enderecoIp);
         CACHE.put(nome, enderecoIp);
       }
     }
@@ -170,7 +171,7 @@ public final class HappyEyeballs {
   private Future<Amostra> criaAtividade(final List<? extends InetAddress> enderecosIp,
       final int porta) throws HappyEyeBallsException {
     if (enderecosIp == null || enderecosIp.isEmpty()) {
-      throw new IllegalArgumentException("Lista de endereço inválida.");
+      throw new IllegalArgumentException(Mensagens.HAPPYEYEBALLS_9);
     } else {
       final MelhorIp melhorIp = new MelhorIp(TEMPO_EXPIRACAO, enderecosIp, porta);
       return EXECUTOR.submit(melhorIp);
@@ -187,14 +188,14 @@ public final class HappyEyeballs {
   private Amostra executarTarefa(final Future<Amostra> tarefa) throws HappyEyeBallsException {
     try {
       if (tarefa == null) {
-        throw new IllegalArgumentException("Tarefa nula");
+        throw new IllegalArgumentException(Mensagens.HAPPYEYEBALLS_10);
       } else {
         return tarefa.get();
       }
     } catch (InterruptedException exce) {
-      throw new HappyEyeBallsException("Thread interrmpida", exce);
+      throw new HappyEyeBallsException(Mensagens.HAPPYEYEBALLS_11, exce);
     } catch (ExecutionException exce) {
-      throw new HappyEyeBallsException("Erro de execução da thread", exce);
+      throw new HappyEyeBallsException(Mensagens.HAPPYEYEBALLS_12, exce);
     }
   }
 

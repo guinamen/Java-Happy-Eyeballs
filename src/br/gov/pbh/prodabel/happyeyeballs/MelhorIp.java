@@ -62,10 +62,10 @@ public class MelhorIp implements Callable<Amostra> {
       final int porta) throws HappyEyeBallsException {
     super();
     if (enderecosIpV == null || enderecosIpV.isEmpty()) {
-      throw new HappyEyeBallsException("Lista de endereços não pode estar vazia.");
+      throw new HappyEyeBallsException(Mensagens.HAPPYEYEBALLS_16);
     }
     if (porta <= 0 || porta > Short.MAX_VALUE) {
-      throw new HappyEyeBallsException("A porta de conexão deve ser válida.");
+      throw new HappyEyeBallsException(Mensagens.HAPPYEYEBALLS_17);
     }
     this.tempoTimeOut = tempoTimeOut;
     this.porta = porta;
@@ -93,7 +93,7 @@ public class MelhorIp implements Callable<Amostra> {
         canais.clear();
       }
     } catch (IOException excep) {
-      throw new HappyEyeBallsException("Erro ao fechar os canais", excep);
+      throw new HappyEyeBallsException(Mensagens.HAPPYEYEBALLS_18, excep);
     }
   }
 
@@ -117,7 +117,7 @@ public class MelhorIp implements Callable<Amostra> {
         canais.add(canal);
       }
     } catch (IOException excep) {
-      throw new HappyEyeBallsException("Erro ao inicializar os canais", excep);
+      throw new HappyEyeBallsException(Mensagens.HAPPYEYEBALLS_19, excep);
     }
   }
 
@@ -139,15 +139,15 @@ public class MelhorIp implements Callable<Amostra> {
           amostras.add(dados);
         }
       } else {
-        throw new HappyEyeBallsException("Tempo de conexão expirado");
+        throw new HappyEyeBallsException(Mensagens.HAPPYEYEBALLS_20);
       }
-      LOGGER.debug("Amostras: {}", amostras.toString());
+      LOGGER.debug(Mensagens.HAPPYEYEBALLS_21, amostras.toString());
       final Amostra ret = amostras.first();
-      LOGGER.debug("Amostra de melhor tempo: {}", ret);
+      LOGGER.debug(Mensagens.HAPPYEYEBALLS_22, ret);
       amostras.clear();
       return ret;
     } catch (IOException excep) {
-      throw new HappyEyeBallsException("Erro ao checar canais", excep);
+      throw new HappyEyeBallsException(Mensagens.HAPPYEYEBALLS_23, excep); //$NON-NLS-1$
     }
   }
 

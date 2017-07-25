@@ -17,11 +17,11 @@ public class TodosTestes {
 
   @BeforeClass
   public static void setUp() {
-    HappyEyeballs.getSingleHappyEyeballs();
+    HappyEyeballs.getDefaultHappyEyeballs();
   }
 
   @AfterClass
   public static void tearDown() {
-    HappyEyeballs.getSingleHappyEyeballs().terminarPoolThread();
+    HappyEyeballs.terminarPoolThread();
   }
 }

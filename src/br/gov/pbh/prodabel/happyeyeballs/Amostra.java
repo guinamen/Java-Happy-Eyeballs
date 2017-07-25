@@ -107,8 +107,9 @@ public class Amostra implements Comparable<Amostra>, Serializable {
    */
   @Override
   public String toString() {
-    final StringBuffer buffer = new StringBuffer("Amostra [enderecoIp=").append(enderecoIp)
-        .append(", ").append(getTempoTotal()).append("]");
+    final StringBuffer buffer = new StringBuffer(Mensagens.HAPPYEYEBALLS_13).append(enderecoIp)
+        .append(Mensagens.HAPPYEYEBALLS_14).append(getTempoTotal())
+        .append(Mensagens.HAPPYEYEBALLS_15);
     return buffer.substring(0);
   }
 
