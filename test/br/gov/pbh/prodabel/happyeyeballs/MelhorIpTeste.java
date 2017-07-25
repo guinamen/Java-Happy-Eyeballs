@@ -1,4 +1,4 @@
-package br.gov.pbh.prodabel.happyeyeballs.teste;
+package br.gov.pbh.prodabel.happyeyeballs;
 
 import br.gov.pbh.prodabel.happyeyeballs.HappyEyeBallsException;
 import br.gov.pbh.prodabel.happyeyeballs.MelhorIp;

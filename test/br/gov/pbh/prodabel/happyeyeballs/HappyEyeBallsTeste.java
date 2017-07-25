@@ -1,4 +1,4 @@
-package br.gov.pbh.prodabel.happyeyeballs.teste;
+package br.gov.pbh.prodabel.happyeyeballs;
 
 import org.junit.Assert;
 import org.junit.Before;
