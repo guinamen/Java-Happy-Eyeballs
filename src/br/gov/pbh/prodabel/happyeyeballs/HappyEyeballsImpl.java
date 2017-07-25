@@ -67,8 +67,7 @@ final class HappyEyeballsImpl implements HappyEyeballs {
       final CacheManager cacheManager = CacheManagerBuilder.newCacheManager(xmlConfig);
       cacheManager.init();
       CACHE = cacheManager.getCache(Mensagens.HAPPYEYEBALLS_1, String.class, InetAddress.class);
-      // TODO Forma melhor de fornecer os parâmetros de configuração do
-      // algoritmo.
+      /* TODO Forma melhor de fornecer os parâmetros de configuração do algoritmo. */
       EXECUTOR = Executors.newFixedThreadPool(4);
       TEMPO_EXPIRACAO = 300L;
     }
