@@ -22,7 +22,7 @@ import java.util.concurrent.Callable;
  * @author guilherme
  * @version 0.1
  */
-public class MelhorIp implements Callable<Amostra> {
+class MelhorIp implements Callable<Amostra> {
 
   /**
    * Interface de log.

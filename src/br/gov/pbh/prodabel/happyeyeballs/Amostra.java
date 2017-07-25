@@ -10,7 +10,7 @@ import java.util.Arrays;
  * @author guilherme
  * @version 0.1
  */
-public class Amostra implements Comparable<Amostra>, Serializable {
+class Amostra implements Comparable<Amostra>, Serializable {
 
   /**
    * Número serial.
